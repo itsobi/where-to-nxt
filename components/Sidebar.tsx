@@ -1,11 +1,9 @@
 'use client';
 
 import {
-  Globe,
-  Globe2,
   HomeIcon,
+  Loader,
   MessageSquareIcon,
-  Plane,
   SettingsIcon,
 } from 'lucide-react';
 import { Button } from './ui/button';
@@ -13,7 +11,13 @@ import Link from 'next/link';
 import { Hint } from './Hint';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
-import { SignUpButton, UserButton, useUser } from '@clerk/nextjs';
+import {
+  ClerkLoaded,
+  ClerkLoading,
+  SignUpButton,
+  UserButton,
+  useUser,
+} from '@clerk/nextjs';
 import Image from 'next/image';
 
 const sidebarItems = [
@@ -40,9 +44,16 @@ export function Sidebar() {
   if (!user) {
     return (
       <aside className="h-screen bg-moon w-16 lg:w-56 pt-2 flex justify-center">
-        <SignUpButton mode="modal">
-          <Button variant="link">Sign in</Button>
-        </SignUpButton>
+        <div className="mt-2">
+          <ClerkLoading>
+            <Loader className="animate-spin text-primary-blue" />
+          </ClerkLoading>
+        </div>
+        <ClerkLoaded>
+          <SignUpButton mode="modal">
+            <Button variant="link">Sign in</Button>
+          </SignUpButton>
+        </ClerkLoaded>
       </aside>
     );
   } else {
