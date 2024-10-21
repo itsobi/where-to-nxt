@@ -1,3 +1,11 @@
-export function CountryDropdown() {
-  return <div className="col-span-2 bg-green-300">CountryDropdown</div>;
+interface CountryDropdownProps {
+  className: string;
+}
+
+export function CountryDropdown({ className }: CountryDropdownProps) {
+  return (
+    <div className={className}>
+      <div className="flex justify-center">Country Dropdown</div>
+    </div>
+  );
 }

@@ -19,6 +19,8 @@ import {
   useUser,
 } from '@clerk/nextjs';
 import Image from 'next/image';
+import { DottedSeparator } from './DottedSeparator';
+import { useMediaQuery } from '@/lib/useMediaQuery';
 
 const sidebarItems = [
   {
@@ -39,18 +41,19 @@ const sidebarItems = [
 ];
 
 export function Sidebar() {
+  const isLargeScreen = useMediaQuery('(min-width: 1024px)');
   const pathname = usePathname();
   const { user } = useUser();
   if (!user) {
     return (
-      <aside className="h-screen bg-moon w-16 lg:w-56 pt-2 flex flex-col items-center">
+      <aside className="h-screen px-4 bg-moon w-16 lg:w-56 pt-2 flex flex-col items-center">
         <div className="flex items-center gap-x-2 py-2 text-primary-blue">
           <Image src="/logo.svg" alt="Where To NXT?" width={40} height={100} />
           <h4 className="hidden lg:flex text-lg font-semibold">
             Where To NXT?
           </h4>
         </div>
-        <hr className="w-full border-dotted border-gray-300" />
+        <DottedSeparator />
         <div className="mt-2">
           <ClerkLoading>
             <Loader className="animate-spin text-primary-blue" />
@@ -72,10 +75,16 @@ export function Sidebar() {
             Where To NXT?
           </h4>
         </div>
-        <hr className="w-full border-dotted border-gray-300" />
+        <DottedSeparator />
         <div className="flex flex-col items-center lg:items-start pt-2 gap-y-2 w-full">
           {sidebarItems.map((item) => (
-            <Hint description={item.label} key={item.label}>
+            <Hint
+              description={item.label}
+              key={item.label}
+              side="right"
+              className="w-full"
+              disabled={isLargeScreen}
+            >
               <Link
                 href={item.href}
                 className={cn(

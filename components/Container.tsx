@@ -1,11 +1,8 @@
-import { cn } from '@/lib/utils';
-
-export function Container({
-  children,
-  className,
-}: {
+interface ContainerProps {
   children: React.ReactNode;
   className?: string;
-}) {
-  return <div className={cn('col-span-full', className)}>{children}</div>;
+}
+
+export function Container({ children, className }: ContainerProps) {
+  return <div className={className}>{children}</div>;
 }

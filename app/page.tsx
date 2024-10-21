@@ -1,17 +1,15 @@
 import { Container } from '@/components/Container';
 import { CountryDropdown } from '@/components/CountryDropdown';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-
+import { PostForm } from '@/components/PostForm';
 export default async function HomePage() {
   return (
     <>
-      <Container className="">
-        <div className="bg-red-300 h-full">
-          <p>hello</p>
+      <Container className="col-span-full lg:col-span-5">
+        <div className="h-full">
+          <PostForm />
         </div>
       </Container>
-      {/* <CountryDropdown /> */}
+      <CountryDropdown className="hidden lg:inline-grid lg:col-span-2" />
     </>
   );
 }
