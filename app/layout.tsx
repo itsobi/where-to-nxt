@@ -18,7 +18,7 @@ export default function RootLayout({
       <html lang="en">
         <body className="min-h-screen flex">
           <Sidebar />
-          <main>{children}</main>
+          <main className="flex-1 p-4 grid grid-cols-7">{children}</main>
         </body>
       </html>
     </ClerkProvider>

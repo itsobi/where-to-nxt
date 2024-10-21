@@ -14,7 +14,7 @@ import { usePathname } from 'next/navigation';
 import {
   ClerkLoaded,
   ClerkLoading,
-  SignUpButton,
+  SignInButton,
   UserButton,
   useUser,
 } from '@clerk/nextjs';
@@ -43,16 +43,23 @@ export function Sidebar() {
   const { user } = useUser();
   if (!user) {
     return (
-      <aside className="h-screen bg-moon w-16 lg:w-56 pt-2 flex justify-center">
+      <aside className="h-screen bg-moon w-16 lg:w-56 pt-2 flex flex-col items-center">
+        <div className="flex items-center gap-x-2 py-2 text-primary-blue">
+          <Image src="/logo.svg" alt="Where To NXT?" width={40} height={100} />
+          <h4 className="hidden lg:flex text-lg font-semibold">
+            Where To NXT?
+          </h4>
+        </div>
+        <hr className="w-full border-dotted border-gray-300" />
         <div className="mt-2">
           <ClerkLoading>
             <Loader className="animate-spin text-primary-blue" />
           </ClerkLoading>
         </div>
         <ClerkLoaded>
-          <SignUpButton mode="modal">
+          <SignInButton mode="modal">
             <Button variant="link">Sign in</Button>
-          </SignUpButton>
+          </SignInButton>
         </ClerkLoaded>
       </aside>
     );

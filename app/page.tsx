@@ -1,10 +1,17 @@
+import { Container } from '@/components/Container';
+import { CountryDropdown } from '@/components/CountryDropdown';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 
-export default function Home() {
+export default async function HomePage() {
   return (
-    <main className="">
-      <p>hello</p>
-    </main>
+    <>
+      <Container className="">
+        <div className="bg-red-300 h-full">
+          <p>hello</p>
+        </div>
+      </Container>
+      {/* <CountryDropdown /> */}
+    </>
   );
 }
