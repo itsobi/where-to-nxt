@@ -1,5 +1,3 @@
-// lib/supabaseAdmin.ts
-
 import { createClient } from '@supabase/supabase-js';
 
 // Use environment variables for Supabase credentials

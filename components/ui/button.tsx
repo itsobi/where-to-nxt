@@ -5,20 +5,21 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
         default:
-          'bg-primary-blue text-primary-foreground hover:bg-primary-blue/90',
+          'bg-primary-blue text-primary-foreground hover:bg-primary-blue/90 disabled:hover:bg-primary-blue',
         destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+          'bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:hover:bg-destructive',
         outline:
-          'border border-input bg-background hover:bg-moon hover:text-accent-foreground',
+          'border border-input bg-background hover:bg-moon hover:text-accent-foreground disabled:hover:bg-background',
         secondary:
-          'bg-secondary-blue text-secondary-foreground hover:bg-secondary-blue/80',
-        ghost: 'hover:bg-primary-blue hover:text-primary-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
+          'bg-secondary-blue text-secondary-foreground hover:bg-secondary-blue/80 disabled:hover:bg-secondary-blue',
+        ghost:
+          'hover:bg-primary-blue hover:text-primary-foreground disabled:hover:bg-primary-blue',
+        link: 'text-primary underline-offset-4 hover:underline disabled:hover:text-primary',
       },
       size: {
         default: 'h-10 px-4 py-2',

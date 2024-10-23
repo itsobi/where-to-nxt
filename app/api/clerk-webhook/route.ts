@@ -51,16 +51,25 @@ export async function POST(req: Request) {
   // Do something with the payload
   const { id } = evt.data;
 
-  if (evt.type === 'user.created') {
-    const { data, error } = await supabaseAdmin.from('users').insert({
-      clerk_user_id: id,
-    });
+  if (evt.type === 'user.created' || evt.type === 'user.updated') {
+    const { data, error } = await supabaseAdmin.from('users').upsert(
+      {
+        clerk_user_id: id,
+        username: evt.data.username,
+        profile_image: evt.data.image_url,
+      },
+      {
+        onConflict: 'clerk_user_id',
+      }
+    );
+
     if (error) {
-      console.error('Error inserting user into supabase:', error);
+      console.error('Error upserting user into supabase:', error);
+      return new Response('Error processing webhook', { status: 500 });
     }
   }
 
-  console.log(`CLERK ID: ${id} ADDED TO DB`);
+  console.log(`CLERK ID: ${id} upserted to supabase`);
 
   return new Response('Webhook processed successfully', { status: 200 });
 }
