@@ -83,7 +83,7 @@ export function PostForm() {
   const btnDisabled = !user || !post || !country || isPending;
 
   return (
-    <Card className="shadow-md p-2">
+    <Card className="py-2 mb-4">
       <CardContent className="space-y-4">
         <form
           action={async (formData: FormData) => {
@@ -109,18 +109,32 @@ export function PostForm() {
                 {user?.username?.[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <textarea
-              name="post"
-              value={post}
-              onChange={(e) => setPost(e.target.value)}
-              className="w-full outline-none resize-none text-sm lg:text-base disabled:cursor-not-allowed bg-transparent"
-              placeholder="Tell people about your experience!"
-              disabled={!user}
-            />
+            <div className="w-full flex flex-col lg:flex-row lg:items-start">
+              <textarea
+                name="post"
+                value={post}
+                onChange={(e) => setPost(e.target.value)}
+                className="w-full mt-2 outline-none h-24 resize-none text-sm lg:text-base disabled:cursor-not-allowed bg-transparent"
+                placeholder="Tell us about your experience!"
+                maxLength={500}
+                disabled={!user}
+              />
+              <div className="text-xs text-muted-foreground text-right">
+                <span
+                  className={cn(
+                    post.length > 399 && 'text-yellow-400',
+                    post.length > 449 && 'text-red-400'
+                  )}
+                >
+                  {post.length}
+                </span>
+                /500 characters
+              </div>
+            </div>
           </div>
           <DottedSeparator />
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 max-w-[70%]">
+            <div className="flex items-center space-x-2 max-w-[70%] lg:w-full">
               <div className="flex max-w-[200px]">
                 {!region ? (
                   <Select
@@ -175,7 +189,7 @@ export function PostForm() {
                 )}
               </div>
 
-              <Hint description="Add image" side="top">
+              <Hint description="Add image" side="top" disabled={!user}>
                 <Image
                   className={cn(
                     'text-muted-foreground cursor-pointer hover:text-primary-blue',

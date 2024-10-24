@@ -64,6 +64,20 @@ export function Sidebar() {
             <Button variant="link">Sign in</Button>
           </SignInButton>
         </ClerkLoaded>
+
+        <footer className="py-4 hidden lg:block text-xs text-muted-foreground absolute bottom-0">
+          <p>
+            brought to you by:{' '}
+            <a
+              href="https://justobii.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-blue hover:underline"
+            >
+              justobii.com
+            </a>
+          </p>
+        </footer>
       </aside>
     );
   } else {

@@ -1,16 +1,16 @@
 'use server';
 
 import { supabaseAdmin } from '@/supabase/admin';
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 
 export const createPost = async (
   formData: FormData
 ): Promise<{ success: boolean; message: string }> => {
   auth().protect();
-  const { userId } = auth();
+  const user = await currentUser();
 
-  if (!userId) {
+  if (!user) {
     return { success: false, message: 'Not authorized.' };
   }
 
@@ -29,7 +29,7 @@ export const createPost = async (
 
     for (const [key, value] of Array.from(formData.entries())) {
       if (key.startsWith('image-') && value instanceof Blob) {
-        const filename = `${userId}/${Date.now()}-${value.name}`;
+        const filename = `${user.id}/${Date.now()}-${value.name}`;
         const { data, error } = await supabaseAdmin.storage
           .from('posts')
           .upload(filename, value);
@@ -50,7 +50,9 @@ export const createPost = async (
     const { data, error } = await supabaseAdmin
       .from('posts')
       .insert({
-        author_clerk_user_id: userId,
+        author_clerk_user_id: user.id,
+        username: user.username,
+        author_profile_image: user.imageUrl,
         post,
         country,
         images: imageUrls,

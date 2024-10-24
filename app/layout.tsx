@@ -17,9 +17,11 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className="min-h-screen flex">
+        <body className="h-screen flex overflow-hidden">
           <Sidebar />
-          <main className="flex-1 p-4 grid grid-cols-7">{children}</main>
+          <main className="flex-1 p-4 grid grid-cols-7 overflow-y-auto">
+            {children}
+          </main>
           <Toaster position="bottom-center" richColors />
         </body>
       </html>

@@ -24,3 +24,14 @@ const groupByRegion = (countries: Country[]) => {
 };
 
 export const groupedCountries = groupByRegion(countries);
+
+export const getCountry = (code: string) => {
+  const country = countries.find((country) => country.cca2 === code);
+  if (country) {
+    return {
+      name: country.name.common,
+      flag: country.flag || '',
+    };
+  }
+  return false;
+};
