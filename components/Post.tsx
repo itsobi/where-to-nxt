@@ -147,40 +147,42 @@ export function Post({ post }: { post: PostType }) {
           <div className="py-2" />
           <DottedSeparator />
 
-          <div className="py-2 flex items-center justify-between gap-2">
-            <ThumbsUp size={isLargeScreen ? 18 : 16} />
-            <MessageCircle size={isLargeScreen ? 18 : 16} />
-            {post.author_clerk_user_id === user?.id && (
-              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                <PopoverTrigger>
-                  <Trash2
-                    className="text-red-500"
-                    size={isLargeScreen ? 18 : 16}
-                  />
-                </PopoverTrigger>
-                <PopoverContent>
-                  <h4 className="font-semibold mb-2">
-                    Are you sure you want to delete this post?
-                  </h4>
+          {user?.id && (
+            <div className="py-2 flex items-center space-x-6">
+              <ThumbsUp size={isLargeScreen ? 18 : 16} />
+              <MessageCircle size={isLargeScreen ? 18 : 16} />
+              {post.author_clerk_user_id === user?.id && (
+                <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                  <PopoverTrigger>
+                    <Trash2
+                      className="text-red-500"
+                      size={isLargeScreen ? 18 : 16}
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <h4 className="font-semibold mb-2">
+                      Are you sure you want to delete this post?
+                    </h4>
 
-                  <Button
-                    onClick={() => setPopoverOpen(false)}
-                    className="mr-2"
-                    variant="outline"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={handleDeletePost}
-                    disabled={isPending}
-                  >
-                    Delete
-                  </Button>
-                </PopoverContent>
-              </Popover>
-            )}
-          </div>
+                    <Button
+                      onClick={() => setPopoverOpen(false)}
+                      className="mr-2"
+                      variant="outline"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={handleDeletePost}
+                      disabled={isPending}
+                    >
+                      Delete
+                    </Button>
+                  </PopoverContent>
+                </Popover>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
