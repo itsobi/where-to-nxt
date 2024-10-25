@@ -115,7 +115,11 @@ export function PostForm() {
                 value={post}
                 onChange={(e) => setPost(e.target.value)}
                 className="w-full mt-2 outline-none h-24 resize-none text-sm lg:text-base disabled:cursor-not-allowed bg-transparent"
-                placeholder="Tell us about your experience!"
+                placeholder={
+                  user
+                    ? 'Tell us about your travel experience!'
+                    : 'Sign in to share your travel experiences!'
+                }
                 maxLength={500}
                 disabled={!user}
               />

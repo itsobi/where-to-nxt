@@ -1,17 +1,32 @@
+'use client';
+
 import { formatDistanceToNow } from 'date-fns';
 
 import { PostType } from '@/lib/queries/getPosts';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { getCountry } from '@/lib/countries';
+
 import {
   TooltipProvider,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from './ui/tooltip';
+
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from './ui/dialog';
 import { Skeleton } from './ui/skeleton';
-import { auth } from '@clerk/nextjs/server';
+
 import Image from 'next/image';
+import { useState, useTransition } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { DottedSeparator } from './DottedSeparator';
+import { MessageCircle, ThumbsUp, Trash2 } from 'lucide-react';
+import { useMediaQuery } from '@/lib/useMediaQuery';
+import { Button } from './ui/button';
+import { deletePost } from '@/lib/actions/deletePost';
+import { toast } from 'sonner';
 
 const getGridClass = (imageCount: number) => {
   switch (imageCount) {
@@ -31,8 +46,26 @@ const getGridClass = (imageCount: number) => {
 };
 
 export function Post({ post }: { post: PostType }) {
-  const { userId } = auth();
+  const { user } = useUser();
   const country = getCountry(post.country);
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(
+    undefined
+  );
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const isLargeScreen = useMediaQuery('(min-width: 1024px)');
+  const [isPending, startTransition] = useTransition();
+
+  const handleDeletePost = async () => {
+    startTransition(async () => {
+      setPopoverOpen(false);
+      const response = await deletePost(post.id, post.images);
+      if (response.success) {
+        toast.success('Post deleted successfully!');
+      } else {
+        toast.error(response.message);
+      }
+    });
+  };
 
   return (
     <div className="border rounded shadow-md p-4 relative mb-4">
@@ -65,7 +98,7 @@ export function Post({ post }: { post: PostType }) {
               addSuffix: true,
             })}
           </p>
-          {userId ? (
+          {user?.id ? (
             <p className="text-sm lg:text-base">{post.post}</p>
           ) : (
             <div className="space-y-2">
@@ -79,16 +112,30 @@ export function Post({ post }: { post: PostType }) {
             <div
               className={`grid ${getGridClass(post.images.length)} gap-2 mt-4`}
             >
-              {userId
+              {user?.id
                 ? post.images.map((image, index) => (
                     <div key={index} className="flex items-center">
-                      <Image
-                        src={image}
-                        alt={`Post image ${index + 1}`}
-                        width={500}
-                        height={500}
-                        className="rounded"
-                      />
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Image
+                            src={image}
+                            alt={`Post image ${index + 1}`}
+                            width={500}
+                            height={500}
+                            className="rounded cursor-pointer"
+                            onClick={() => setSelectedImage(image)}
+                          />
+                        </DialogTrigger>
+                        <DialogContent className="bg-transparent border-none">
+                          <Image
+                            src={selectedImage || ''}
+                            alt="Full screen image"
+                            width={800}
+                            height={800}
+                            className="rounded"
+                          />
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   ))
                 : Array.from({ length: post.images.length }).map((_, index) => (
@@ -96,6 +143,44 @@ export function Post({ post }: { post: PostType }) {
                   ))}
             </div>
           )}
+
+          <div className="py-2" />
+          <DottedSeparator />
+
+          <div className="py-2 flex items-center justify-between gap-2">
+            <ThumbsUp size={isLargeScreen ? 18 : 16} />
+            <MessageCircle size={isLargeScreen ? 18 : 16} />
+            {post.author_clerk_user_id === user?.id && (
+              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                <PopoverTrigger>
+                  <Trash2
+                    className="text-red-500"
+                    size={isLargeScreen ? 18 : 16}
+                  />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <h4 className="font-semibold mb-2">
+                    Are you sure you want to delete this post?
+                  </h4>
+
+                  <Button
+                    onClick={() => setPopoverOpen(false)}
+                    className="mr-2"
+                    variant="outline"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleDeletePost}
+                    disabled={isPending}
+                  >
+                    Delete
+                  </Button>
+                </PopoverContent>
+              </Popover>
+            )}
+          </div>
         </div>
       </div>
     </div>
