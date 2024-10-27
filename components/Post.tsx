@@ -27,6 +27,8 @@ import { useMediaQuery } from '@/lib/useMediaQuery';
 import { Button } from './ui/button';
 import { deletePost } from '@/lib/actions/deletePost';
 import { toast } from 'sonner';
+import { likePost } from '@/lib/actions/likePost';
+import { cn } from '@/lib/utils';
 
 const getGridClass = (imageCount: number) => {
   switch (imageCount) {
@@ -51,9 +53,19 @@ export function Post({ post }: { post: PostType }) {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
     undefined
   );
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
   const [isPending, startTransition] = useTransition();
+
+  const alreadyLiked = post.liked_by[0]?.clerk_user_id.includes(user?.id || '');
+
+  const handleImageClick = (e: React.MouseEvent, image: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedImage(image);
+    setIsDialogOpen(true);
+  };
 
   const handleDeletePost = async () => {
     startTransition(async () => {
@@ -62,6 +74,16 @@ export function Post({ post }: { post: PostType }) {
       if (response.success) {
         toast.success('Post deleted successfully!');
       } else {
+        toast.error(response.message);
+      }
+    });
+  };
+
+  const handleLikePost = async () => {
+    startTransition(async () => {
+      const response = await likePost(alreadyLiked, post.id, user?.id);
+
+      if (!response.success) {
         toast.error(response.message);
       }
     });
@@ -115,7 +137,10 @@ export function Post({ post }: { post: PostType }) {
               {user?.id
                 ? post.images.map((image, index) => (
                     <div key={index} className="flex items-center">
-                      <Dialog>
+                      <Dialog
+                        open={isDialogOpen}
+                        onOpenChange={setIsDialogOpen}
+                      >
                         <DialogTrigger asChild>
                           <Image
                             src={image}
@@ -123,7 +148,7 @@ export function Post({ post }: { post: PostType }) {
                             width={500}
                             height={500}
                             className="rounded cursor-pointer"
-                            onClick={() => setSelectedImage(image)}
+                            onClick={(e) => handleImageClick(e, image)}
                           />
                         </DialogTrigger>
                         <DialogContent className="bg-transparent border-none">
@@ -148,15 +173,35 @@ export function Post({ post }: { post: PostType }) {
           <DottedSeparator />
 
           {user?.id && (
-            <div className="py-2 flex items-center space-x-6">
-              <ThumbsUp size={isLargeScreen ? 18 : 16} />
-              <MessageCircle size={isLargeScreen ? 18 : 16} />
+            <div className="py-2 flex items-center space-x-8 mt-2">
+              <div className="flex items-center flex-1 gap-x-8">
+                <button
+                  disabled={isPending}
+                  onClick={handleLikePost}
+                  className="hover:text-white relative"
+                >
+                  <ThumbsUp
+                    size={isLargeScreen ? 18 : 16}
+                    className={cn(
+                      'text-black hover:text-green-400',
+                      alreadyLiked && 'text-green-400'
+                    )}
+                  />
+                  {post.likes[0].count > 0 && (
+                    <span className="absolute -top-2 -right-2 text-xs text-black">
+                      {post.likes[0].count}
+                    </span>
+                  )}
+                </button>
+                <MessageCircle size={isLargeScreen ? 18 : 16} />
+              </div>
               {post.author_clerk_user_id === user?.id && (
                 <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                   <PopoverTrigger>
                     <Trash2
                       className="text-red-500"
                       size={isLargeScreen ? 18 : 16}
+                      onClick={(e) => setPopoverOpen(true)}
                     />
                   </PopoverTrigger>
                   <PopoverContent>
@@ -164,20 +209,21 @@ export function Post({ post }: { post: PostType }) {
                       Are you sure you want to delete this post?
                     </h4>
 
-                    <Button
-                      onClick={() => setPopoverOpen(false)}
-                      className="mr-2"
-                      variant="outline"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      onClick={handleDeletePost}
-                      disabled={isPending}
-                    >
-                      Delete
-                    </Button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        onClick={() => setPopoverOpen(false)}
+                        variant="outline"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={handleDeletePost}
+                        disabled={isPending}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </PopoverContent>
                 </Popover>
               )}
