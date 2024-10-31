@@ -29,6 +29,8 @@ import { deletePost } from '@/lib/actions/deletePost';
 import { toast } from 'sonner';
 import { likePost } from '@/lib/actions/likePost';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
+import { CreateCommentDialog } from './CreateCommentDialog';
 
 const getGridClass = (imageCount: number) => {
   switch (imageCount) {
@@ -47,7 +49,12 @@ const getGridClass = (imageCount: number) => {
   }
 };
 
-export function Post({ post }: { post: PostType }) {
+interface PostProps {
+  post: PostType;
+  linkToPost?: boolean;
+}
+
+export function Post({ post, linkToPost = false }: PostProps) {
   const { user } = useUser();
   const country = getCountry(post.country);
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
@@ -58,7 +65,9 @@ export function Post({ post }: { post: PostType }) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
   const [isPending, startTransition] = useTransition();
 
-  const alreadyLiked = post.liked_by[0]?.clerk_user_id.includes(user?.id || '');
+  const alreadyLiked = post.liked_by.some(
+    (like) => like.clerk_user_id === user?.id
+  );
 
   const handleImageClick = (e: React.MouseEvent, image: string) => {
     e.preventDefault();
@@ -151,7 +160,7 @@ export function Post({ post }: { post: PostType }) {
                             onClick={(e) => handleImageClick(e, image)}
                           />
                         </DialogTrigger>
-                        <DialogContent className="bg-transparent border-none">
+                        <DialogContent className="border-none bg-transparent">
                           <Image
                             src={selectedImage || ''}
                             alt="Full screen image"
@@ -187,13 +196,28 @@ export function Post({ post }: { post: PostType }) {
                       alreadyLiked && 'text-green-400'
                     )}
                   />
-                  {post.likes[0].count > 0 && (
+                  {post.like_count > 0 && (
                     <span className="absolute -top-2 -right-2 text-xs text-black">
-                      {post.likes[0].count}
+                      {post.like_count}
                     </span>
                   )}
                 </button>
-                <MessageCircle size={isLargeScreen ? 18 : 16} />
+
+                <CreateCommentDialog
+                  post={post}
+                  username={user?.username}
+                  usernameImage={user.imageUrl}
+                  userProfileImage={user.imageUrl}
+                />
+
+                {linkToPost && (
+                  <Link
+                    href={`/post/${post.id}`}
+                    className="hover:underline underline-offset-4"
+                  >
+                    <span className="text-xs lg:text-sm">Go To Post</span>
+                  </Link>
+                )}
               </div>
               {post.author_clerk_user_id === user?.id && (
                 <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>

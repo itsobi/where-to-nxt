@@ -6,13 +6,14 @@ import { getPosts } from '@/lib/queries/getPosts';
 
 export default async function HomePage() {
   const posts = await getPosts();
+
   return (
     <>
       <Container className="col-span-full lg:col-span-5">
         <div className="h-full flex flex-col">
           <PostForm />
           {posts.length ? (
-            posts.map((post) => <Post key={post.id} post={post} />)
+            posts.map((post) => <Post key={post.id} post={post} linkToPost />)
           ) : (
             <div className="flex flex-col items-center justify-center h-full">
               <p className="text-lg font-semibold">No posts yet.</p>

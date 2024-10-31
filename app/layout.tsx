@@ -5,8 +5,9 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
-  title: 'WhereToNxt?',
-  description: 'Traveling soon? Find the best places to explore while in town.',
+  title: 'Where To NXT?',
+  description:
+    'Traveling soon? Have the travel bug? Find the best places to visit and explore while in town.',
 };
 
 export default function RootLayout({

@@ -243,6 +243,9 @@ export function PostForm() {
             </div>
           ))}
         </div>
+        <p className="text-sm text-muted-foreground">
+          *Post and country are required to create a post
+        </p>
       </CardContent>
     </Card>
   );
