@@ -65,9 +65,8 @@ export function Post({ post, linkToPost = false }: PostProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
   const [isPending, startTransition] = useTransition();
 
-  const alreadyLiked = post.liked_by.some(
-    (like) => like.clerk_user_id === user?.id
-  );
+  const alreadyLiked =
+    post.id && post.liked_by.some((like) => like.clerk_user_id === user?.id);
 
   const handleImageClick = (e: React.MouseEvent, image: string) => {
     e.preventDefault();
@@ -90,7 +89,7 @@ export function Post({ post, linkToPost = false }: PostProps) {
 
   const handleLikePost = async () => {
     startTransition(async () => {
-      const response = await likePost(alreadyLiked, post.id, user?.id);
+      const response = await likePost(!!alreadyLiked, post.id, user?.id);
 
       if (!response.success) {
         toast.error(response.message);
@@ -130,7 +129,7 @@ export function Post({ post, linkToPost = false }: PostProps) {
             })}
           </p>
           {user?.id ? (
-            <p className="text-sm lg:text-base">{post.post}</p>
+            <p className="text-sm lg:text-base">{post.content}</p>
           ) : (
             <div className="space-y-2">
               <Skeleton className="w-full h-4" />
@@ -205,7 +204,7 @@ export function Post({ post, linkToPost = false }: PostProps) {
 
                 <CreateCommentDialog
                   post={post}
-                  username={user?.username}
+                  username={user.username}
                   usernameImage={user.imageUrl}
                   userProfileImage={user.imageUrl}
                 />

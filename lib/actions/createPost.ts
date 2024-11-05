@@ -53,7 +53,7 @@ export const createPost = async (
         author_clerk_user_id: user.id,
         username: user.username,
         author_profile_image: user.imageUrl,
-        post,
+        content: post,
         country,
         images: imageUrls,
       })

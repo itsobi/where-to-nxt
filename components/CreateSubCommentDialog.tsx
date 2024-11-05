@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-import { PostType } from '@/lib/queries/getPosts';
+import { CommentType, PostType } from '@/lib/queries/getPosts';
 import { MessageCircle, ThumbsUp } from 'lucide-react';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -22,43 +22,45 @@ import { cn } from '@/lib/utils';
 import { createComment } from '@/lib/actions/createComment';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { createSubComment } from '@/lib/actions/createSubComment';
 
-interface CreateCommentDialogProps {
-  post: PostType;
+interface CreateSubCommentDialogProps {
+  comment: CommentType;
   username: string | null;
   usernameImage: string | null;
   userProfileImage: string | null;
+  postId: string;
 }
 
-export function CreateCommentDialog({
-  post,
+export function CreateSubCommentDialog({
+  comment,
   username,
   usernameImage,
   userProfileImage,
-}: CreateCommentDialogProps) {
+  postId,
+}: CreateSubCommentDialogProps) {
+  console.log('COMMENT >>>', comment);
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
 
-  const [comment, setComment] = useState('');
+  const [content, setContent] = useState('');
   const [isPending, startTransition] = useTransition();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const router = useRouter();
-
   const handleSubmit = async () => {
-    setComment('');
+    setContent('');
     startTransition(async () => {
-      const result = await createComment({
-        postId: post.id,
-        comment: comment,
+      const result = await createSubComment({
+        commentId: comment.id,
+        content: content,
         authorProfileImage: userProfileImage,
         username: username,
+        postId: postId,
       });
 
       if (result.success) {
         toast.success(result.message);
-
-        router.push(`/post/${post.id}`);
       } else {
+        console.log('ERROR >>>', result.message);
         toast.error(result.message);
       }
 
@@ -71,9 +73,9 @@ export function CreateCommentDialog({
       <DialogTrigger asChild>
         <button className="hover:text-primary-blue relative">
           <MessageCircle size={isLargeScreen ? 18 : 16} />
-          {post.comment_count > 0 && (
+          {comment.comment_count > 0 && (
             <span className="absolute -top-2 -right-2 text-xs text-black">
-              {post.comment_count}
+              {comment.comment_count}
             </span>
           )}
         </button>
@@ -85,20 +87,20 @@ export function CreateCommentDialog({
         <div className="relative flex gap-2">
           <div className="absolute left-[20px] top-[40px] w-[2px] h-[calc(100%-40px)] bg-border" />
           <Avatar>
-            <AvatarFallback>{post.username[0]}</AvatarFallback>
-            <AvatarImage src={post.author_profile_image} />
+            <AvatarFallback>{comment.username[0]}</AvatarFallback>
+            <AvatarImage src={comment.author_profile_image} />
           </Avatar>
 
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <p>{post.username}</p>
+              <p>{comment.username}</p>
               <p className="lg:block text-sm text-muted-foreground">
-                {formatDistanceToNow(new Date(post.created_at), {
+                {formatDistanceToNow(new Date(comment.created_at), {
                   addSuffix: true,
                 })}
               </p>
             </div>
-            <p className="text-sm lg:text-base">{post.content}</p>
+            <p className="text-sm lg:text-base">{comment.content}</p>
           </div>
         </div>
 
@@ -109,8 +111,8 @@ export function CreateCommentDialog({
           </Avatar>
           <div className="w-full flex flex-col lg:flex-row lg:items-start">
             <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               className="w-full mt-2 outline-none h-24 resize-none text-sm lg:text-base disabled:cursor-not-allowed bg-transparent"
               placeholder="Reply here"
               maxLength={500}
@@ -118,11 +120,11 @@ export function CreateCommentDialog({
             <div className="text-xs text-muted-foreground text-right">
               <span
                 className={cn(
-                  comment.length > 399 && 'text-yellow-400',
-                  comment.length > 449 && 'text-red-400'
+                  content.length > 399 && 'text-yellow-400',
+                  content.length > 449 && 'text-red-400'
                 )}
               >
-                {comment.length}
+                {content.length}
               </span>
               /500 characters
             </div>
@@ -135,7 +137,7 @@ export function CreateCommentDialog({
             variant="default"
             className="w-full"
             onClick={handleSubmit}
-            disabled={comment.length === 0 || isPending}
+            disabled={content.length === 0 || isPending}
           >
             Reply
           </Button>

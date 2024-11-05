@@ -2,9 +2,13 @@ import { supabaseAdmin } from '@/supabase/admin';
 
 export type CommentType = {
   id: number;
-  comment: string;
+  content: string;
   author_profile_image: string;
   created_at: string;
+  author_clerk_user_id: string;
+  username: string;
+  post_id: number;
+  comment_count: number;
 };
 
 export type PostType = {
@@ -13,14 +17,13 @@ export type PostType = {
   author_clerk_user_id: string;
   username: string;
   author_profile_image: string;
-  post: string;
+  content: string;
   country: string;
   like_count: number;
   comment_count: number;
   liked_by: {
     clerk_user_id: string;
   }[];
-  comments: CommentType[];
   images?: string[];
 };
 

@@ -16,7 +16,7 @@ export default async function HomePage() {
             posts.map((post) => <Post key={post.id} post={post} linkToPost />)
           ) : (
             <div className="flex flex-col items-center justify-center h-full">
-              <p className="text-lg font-semibold">No posts yet.</p>
+              <p className="text-lg font-semibold">No posts</p>
             </div>
           )}
         </div>

@@ -5,15 +5,17 @@ import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 
 type createCommentProps = {
-  postId: number;
+  postId: number | undefined;
   comment: string;
   authorProfileImage: string | null;
+  username: string | null;
 };
 
 export const createComment = async ({
   postId,
   comment,
   authorProfileImage,
+  username,
 }: createCommentProps) => {
   auth().protect();
 
@@ -21,6 +23,10 @@ export const createComment = async ({
 
   if (!userId) {
     throw new Error('User not authenticated');
+  }
+
+  if (!postId) {
+    throw new Error('Post ID is required');
   }
 
   const trimmedComment = comment.trim();
@@ -39,8 +45,9 @@ export const createComment = async ({
       .insert({
         post_id: postId,
         author_clerk_user_id: userId,
-        comment: trimmedComment,
+        content: trimmedComment,
         author_profile_image: authorProfileImage,
+        username: username,
       })
       .select()
       .single();
@@ -65,7 +72,7 @@ export const createComment = async ({
     revalidatePath('/');
     revalidatePath(`/post/${postId}`);
 
-    return { success: true, message: 'Comment created successfully' };
+    return { success: true, message: 'Comment created successfully!' };
   } catch (error) {
     console.log('ERROR >>>', error);
     return { success: false, message: 'Failed to create comment' };
