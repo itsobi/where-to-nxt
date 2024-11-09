@@ -21,7 +21,7 @@ export async function likePost(
     if (alreadyLiked) {
       // Unlike the post
       const { error: deleteError } = await supabaseAdmin
-        .from('likes')
+        .from('post_likes')
         .delete()
         .eq('post_id', postId)
         .eq('clerk_user_id', userId);
@@ -44,7 +44,7 @@ export async function likePost(
     } else {
       // Like the post
       const { error: insertError } = await supabaseAdmin
-        .from('likes')
+        .from('post_likes')
         .insert({ post_id: postId, clerk_user_id: userId });
 
       if (insertError) {
@@ -77,3 +77,7 @@ export async function likePost(
     };
   }
 }
+
+export const likeComment = async (commentId: number) => {
+  auth().protect();
+};

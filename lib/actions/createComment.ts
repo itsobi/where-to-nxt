@@ -54,7 +54,7 @@ export const createComment = async ({
 
     if (error) {
       console.log('ERROR >>>', error);
-      throw new Error('Failed to create comment');
+      return { success: false, message: 'Failed to create comment' };
     }
 
     const { error: incrementError } = await supabaseAdmin.rpc(
@@ -64,7 +64,7 @@ export const createComment = async ({
 
     if (incrementError) {
       console.log('ERROR >>>', incrementError);
-      throw new Error('Failed to increment comment count');
+      return { success: false, message: 'Failed to increment comment count' };
     }
 
     console.log('CREATED COMMENT WITH ID >>>', data?.id);

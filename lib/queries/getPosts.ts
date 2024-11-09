@@ -32,7 +32,7 @@ export const getPosts = async (): Promise<PostType[]> => {
     .from('posts')
     .select(
       `*,
-      liked_by:likes(clerk_user_id)`
+      liked_by:post_likes(clerk_user_id)`
     )
     .order('created_at', { ascending: false });
 

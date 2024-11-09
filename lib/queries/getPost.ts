@@ -6,13 +6,14 @@ export const getPost = async (postId: string) => {
     .from('posts')
     .select(
       `*,
-      liked_by:likes(clerk_user_id)`
+      liked_by:post_likes(clerk_user_id)`
     )
     .eq('id', postId)
     .single();
 
   if (error) {
-    throw new Error(`Failed to fetch post: ${error.message}`);
+    console.error('Error fetching post:', error);
+    return null;
   }
 
   return post as PostType;

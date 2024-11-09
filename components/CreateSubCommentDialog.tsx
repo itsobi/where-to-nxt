@@ -39,7 +39,6 @@ export function CreateSubCommentDialog({
   userProfileImage,
   postId,
 }: CreateSubCommentDialogProps) {
-  console.log('COMMENT >>>', comment);
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
 
   const [content, setContent] = useState('');

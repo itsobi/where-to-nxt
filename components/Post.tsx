@@ -27,7 +27,7 @@ import { useMediaQuery } from '@/lib/useMediaQuery';
 import { Button } from './ui/button';
 import { deletePost } from '@/lib/actions/deletePost';
 import { toast } from 'sonner';
-import { likePost } from '@/lib/actions/likePost';
+import { likePost } from '@/lib/actions/like-actions';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { CreateCommentDialog } from './CreateCommentDialog';

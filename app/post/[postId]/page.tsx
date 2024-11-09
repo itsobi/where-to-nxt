@@ -17,7 +17,7 @@ export default async function PostPage({
 
   const { userId } = auth();
 
-  if (!post.id) {
+  if (!post) {
     return (
       <CustomAlertDialog
         title="Post not found"
