@@ -1,13 +1,15 @@
+import { CommentPageSubComment } from '@/components/CommentPageSubComment';
 import { Container } from '@/components/Container';
 import { CountryDropdown } from '@/components/CountryDropdown';
 import { DottedSeparator } from '@/components/DottedSeparator';
 import { PostActions } from '@/components/PostActions';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getCommentById } from '@/lib/queries/getComments';
+import { getCommentById, getSubComments } from '@/lib/queries/getComments';
 import { SignedIn } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
 import { formatDistanceToNow } from 'date-fns';
+import { notFound } from 'next/navigation';
 
 export default async function MainCommentPage({
   params,
@@ -16,6 +18,12 @@ export default async function MainCommentPage({
 }) {
   const { userId } = auth();
   const comment = await getCommentById(Number(params.commentId));
+  const subComments = await getSubComments(Number(params.commentId));
+
+  if (!comment) {
+    return notFound();
+  }
+
   return (
     <>
       <Container className="col-span-full lg:col-span-5">
@@ -63,6 +71,16 @@ export default async function MainCommentPage({
             </div>
           </div>
         </div>
+
+        <h2 className="text-lg font-semibold">Replies</h2>
+        {subComments.map((subComment, index) => (
+          <CommentPageSubComment
+            key={subComment.id}
+            subComment={subComment}
+            userId={userId}
+            postId={comment.post_id}
+          />
+        ))}
       </Container>
       <CountryDropdown className="hidden lg:inline-grid lg:col-span-2" />
     </>

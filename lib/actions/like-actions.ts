@@ -27,7 +27,7 @@ export async function likePost(
         .eq('clerk_user_id', userId);
 
       if (deleteError) {
-        console.error('Error deleting like:', deleteError);
+        console.error('Error removing like:', deleteError);
         throw deleteError;
       }
 
@@ -78,6 +78,73 @@ export async function likePost(
   }
 }
 
-export const likeComment = async (commentId: number) => {
+export const likeComment = async (
+  alreadyLiked: boolean,
+  commentId: number,
+  postId: string
+) => {
   auth().protect();
+
+  console.log('already liked', alreadyLiked);
+
+  const { userId } = auth();
+
+  if (!commentId || !userId) {
+    throw new Error('Comment ID or user ID is missing');
+  }
+
+  try {
+    if (alreadyLiked) {
+      // Unlike the comment
+      const { error: deleteError } = await supabaseAdmin
+        .from('comment_likes')
+        .delete()
+        .eq('comment_id', commentId)
+        .eq('clerk_user_id', userId);
+
+      if (deleteError) {
+        console.error('Error removing like:', deleteError);
+        throw deleteError;
+      }
+
+      const { error: decrementError } = await supabaseAdmin.rpc(
+        'decrement_comment_likes',
+        { comment_id: commentId }
+      );
+      if (decrementError) {
+        console.error('Error decrementing likes:', decrementError);
+        throw decrementError;
+      }
+    } else {
+      // Like the comment
+      const { error: insertError } = await supabaseAdmin
+        .from('comment_likes')
+        .insert({ comment_id: commentId, clerk_user_id: userId });
+
+      if (insertError) {
+        console.error('Error inserting like:', insertError);
+        throw insertError;
+      }
+
+      const { error: incrementError } = await supabaseAdmin.rpc(
+        'increment_comment_likes',
+        { comment_id: commentId }
+      );
+      if (incrementError) {
+        console.error('Error incrementing likes:', incrementError);
+        throw incrementError;
+      }
+    }
+    revalidatePath('/');
+    revalidatePath(`/post/${postId}`);
+    console.log('LIKE POST SUCCESSFUL');
+    return { success: true };
+  } catch (error) {
+    console.error('Error in likeComment:', error);
+    return {
+      success: false,
+      message: 'Failed to like comment',
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
 };

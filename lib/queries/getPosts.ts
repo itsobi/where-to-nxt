@@ -9,6 +9,10 @@ export type CommentType = {
   username: string;
   post_id: number;
   comment_count: number;
+  like_count: number;
+  liked_by: {
+    clerk_user_id: string;
+  }[];
 };
 
 export type PostType = {

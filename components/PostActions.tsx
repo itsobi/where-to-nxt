@@ -11,6 +11,8 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import { deleteComment } from '@/lib/actions/deleteComment';
 import { toast } from 'sonner';
+import { likeComment } from '@/lib/actions/like-actions';
+import { cn } from '@/lib/utils';
 
 interface PostActionsProps {
   comment: CommentType;
@@ -18,10 +20,13 @@ interface PostActionsProps {
 }
 
 export function PostActions({ comment, userId }: PostActionsProps) {
-  const { isSignedIn } = useUser();
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  const alreadyLiked = comment.liked_by?.some(
+    (like) => like.clerk_user_id === userId
+  );
 
   const handleDeleteComment = async () => {
     startTransition(async () => {
@@ -39,11 +44,39 @@ export function PostActions({ comment, userId }: PostActionsProps) {
     });
   };
 
+  const handleLikeComment = async () => {
+    startTransition(async () => {
+      const response = await likeComment(
+        alreadyLiked,
+        comment.id,
+        comment.post_id.toString()
+      );
+      if (!response.success) {
+        toast.error(response.message);
+      }
+    });
+  };
+
   return (
     <div className="flex items-center mt-4">
       <div className="flex flex-1 gap-4">
-        <button>
-          <ThumbsUp size={isLargeScreen ? 18 : 16} />
+        <button
+          onClick={handleLikeComment}
+          disabled={isPending}
+          className="relative"
+        >
+          <ThumbsUp
+            size={isLargeScreen ? 18 : 16}
+            className={cn(
+              'text-black hover:text-green-400',
+              alreadyLiked && 'text-green-400'
+            )}
+          />
+          {comment.like_count > 0 && (
+            <span className="absolute -top-2 -right-2 text-xs text-black">
+              {comment.like_count}
+            </span>
+          )}
         </button>
         <CreateSubCommentDialog
           comment={comment}
