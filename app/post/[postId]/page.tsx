@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/BackButton';
 import { Comment } from '@/components/Comment';
 import { Container } from '@/components/Container';
 import { CountryDropdown } from '@/components/CountryDropdown';
@@ -30,6 +31,7 @@ export default async function PostPage({
   return (
     <>
       <Container className="col-span-full lg:col-span-5">
+        <BackButton text="Post" />
         <div className="h-full flex flex-col">
           <Post post={post} />
 

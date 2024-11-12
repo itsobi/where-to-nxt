@@ -39,9 +39,6 @@ export async function CommentPageSubComment({
                 {subComment.username[0].toLocaleUpperCase()}
               </AvatarFallback>
             </Avatar>
-            {/* {hasParentComment && (
-              <div className="absolute top-8 left-0 w-[2px] h-4 bg-gray-200"></div>
-            )} */}
           </div>
 
           <div className="flex-1">
