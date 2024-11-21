@@ -22,10 +22,7 @@ import { cn } from '@/lib/utils';
 import { createComment } from '@/lib/actions/createComment';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import {
-  createSubComment,
-  createSubCommentReply,
-} from '@/lib/actions/createSubComment';
+import { createSubCommentReply } from '@/lib/actions/createReply';
 import { SubCommentType } from '@/lib/queries/getComments';
 
 interface CommentPageSubCommentDialog {

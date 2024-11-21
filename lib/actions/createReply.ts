@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/supabase/admin';
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 
-type createSubCommentProps = {
+type createReplyProps = {
   commentId: number | undefined;
   content: string;
   authorProfileImage: string | null;
@@ -21,13 +21,13 @@ type createSubCommentReplyProps = {
   postId: string;
 };
 
-export const createSubComment = async ({
+export const createReply = async ({
   commentId,
   content,
   authorProfileImage,
   username,
   postId,
-}: createSubCommentProps) => {
+}: createReplyProps) => {
   auth().protect();
 
   const { userId } = auth();
@@ -36,7 +36,7 @@ export const createSubComment = async ({
     throw new Error('Unauthorized');
   }
 
-  const { error } = await supabaseAdmin.from('sub_comments').insert({
+  const { error } = await supabaseAdmin.from('replies').insert({
     comment_id: commentId,
     author_clerk_user_id: userId,
     username: username,

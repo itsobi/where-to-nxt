@@ -1,18 +1,14 @@
-import { SubCommentType } from '@/lib/queries/getComments';
+import { ReplyType } from '@/lib/queries/getComments';
 import Link from 'next/link';
 
 interface SubCommentsProps {
-  subComments: SubCommentType[];
+  replies: ReplyType[];
   commentId: string;
   postId: string;
 }
 
-export function SubComments({
-  subComments,
-  commentId,
-  postId,
-}: SubCommentsProps) {
-  if (subComments.length) {
+export function SubComments({ replies, commentId, postId }: SubCommentsProps) {
+  if (replies.length) {
     return (
       <Link href={`/post/${postId}/comment/${commentId}`}>
         <p className="text-xs text-gray-500 mt-4 hover:underline">

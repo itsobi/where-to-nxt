@@ -3,9 +3,10 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
 import { Skeleton } from './ui/skeleton';
 import { PostActions } from './PostActions';
-import { getSubComments } from '@/lib/queries/getComments';
+// import { getSubComments } from '@/lib/queries/getComments';
 import { SubComments } from './SubComment';
 import { SignedIn } from '@clerk/nextjs';
+import { getReplies } from '@/lib/queries/getReplies';
 
 interface CommentProps {
   comment: CommentType;
@@ -13,7 +14,7 @@ interface CommentProps {
 }
 
 export async function Comment({ comment, userId }: CommentProps) {
-  const subComments = await getSubComments(comment.id);
+  const replies = await getReplies(comment.id);
 
   return (
     <div className="border-b p-4">
@@ -49,7 +50,7 @@ export async function Comment({ comment, userId }: CommentProps) {
               <PostActions comment={comment} userId={userId} />
 
               <SubComments
-                subComments={subComments}
+                replies={replies}
                 commentId={comment.id.toString()}
                 postId={comment.post_id.toString()}
               />

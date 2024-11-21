@@ -2,7 +2,7 @@
 
 import { CommentType } from '@/lib/queries/getPosts';
 import { Trash2 } from 'lucide-react';
-import { CreateSubCommentDialog } from './CreateSubCommentDialog';
+import { CreateReplyDialog } from './CreateReplyDialog';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { useUser } from '@clerk/nextjs';
 import { ThumbsUp } from 'lucide-react';
@@ -78,7 +78,7 @@ export function PostActions({ comment, userId }: PostActionsProps) {
             </span>
           )}
         </button>
-        <CreateSubCommentDialog
+        <CreateReplyDialog
           comment={comment}
           username={comment.username}
           usernameImage={comment.author_profile_image}

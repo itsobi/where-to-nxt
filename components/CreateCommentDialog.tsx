@@ -23,20 +23,21 @@ import { createComment } from '@/lib/actions/createComment';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
-interface CreateCommentDialogProps {
+interface CreateCommentOnPostDialogProps {
   post: PostType;
   username: string | null;
   usernameImage: string | null;
   userProfileImage: string | null;
 }
 
-export function CreateCommentDialog({
+export function CreateCommentOnPostDialog({
   post,
   username,
   usernameImage,
   userProfileImage,
-}: CreateCommentDialogProps) {
+}: CreateCommentOnPostDialogProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
+  console.log('POST >>>', post);
 
   const [comment, setComment] = useState('');
   const [isPending, startTransition] = useTransition();

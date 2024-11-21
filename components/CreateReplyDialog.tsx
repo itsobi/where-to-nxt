@@ -22,9 +22,9 @@ import { cn } from '@/lib/utils';
 import { createComment } from '@/lib/actions/createComment';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { createSubComment } from '@/lib/actions/createSubComment';
+import { createReply } from '@/lib/actions/createReply';
 
-interface CreateSubCommentDialogProps {
+interface CreateReplyDialogProps {
   comment: CommentType;
   username: string | null;
   usernameImage: string | null;
@@ -32,13 +32,13 @@ interface CreateSubCommentDialogProps {
   postId: string;
 }
 
-export function CreateSubCommentDialog({
+export function CreateReplyDialog({
   comment,
   username,
   usernameImage,
   userProfileImage,
   postId,
-}: CreateSubCommentDialogProps) {
+}: CreateReplyDialogProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
 
   const [content, setContent] = useState('');
@@ -48,7 +48,7 @@ export function CreateSubCommentDialog({
   const handleSubmit = async () => {
     setContent('');
     startTransition(async () => {
-      const result = await createSubComment({
+      const result = await createReply({
         commentId: comment.id,
         content: content,
         authorProfileImage: userProfileImage,

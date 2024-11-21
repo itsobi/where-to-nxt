@@ -14,28 +14,15 @@ export const getComments = async (postId: string) => {
   return comments as CommentType[];
 };
 
-export type SubCommentType = {
+export type ReplyType = {
   id: number;
   created_at: string;
-  comment_id: number;
+  comment_id?: number;
+  parent_reply_id?: number;
   author_clerk_user_id: string;
   username: string;
-  author_profile_image: string;
   content: string;
-  parent_sub_comment_id?: number;
-};
-
-export const getSubComments = async (comment_id: number) => {
-  const { data, error } = await supabaseAdmin
-    .from('sub_comments')
-    .select('*')
-    .eq('comment_id', comment_id)
-    .is('parent_sub_comment_id', null)
-    .order('created_at', { ascending: false });
-
-  if (error) throw error;
-
-  return data as SubCommentType[];
+  author_profile_image: string;
 };
 
 export const getCommentById = async (commentId: number) => {
@@ -65,5 +52,5 @@ export const getSubCommentReplies = async (subCommentId: number) => {
     return null;
   }
 
-  return data as SubCommentType[];
+  return data as ReplyType[];
 };

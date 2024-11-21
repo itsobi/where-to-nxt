@@ -30,7 +30,7 @@ import { toast } from 'sonner';
 import { likePost } from '@/lib/actions/like-actions';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { CreateCommentDialog } from './CreateCommentDialog';
+import { CreateCommentOnPostDialog } from './CreateCommentDialog';
 
 const getGridClass = (imageCount: number) => {
   switch (imageCount) {
@@ -52,9 +52,14 @@ const getGridClass = (imageCount: number) => {
 interface PostProps {
   post: PostType;
   linkToPost?: boolean;
+  hidePostActions?: boolean;
 }
 
-export function Post({ post, linkToPost = false }: PostProps) {
+export function Post({
+  post,
+  linkToPost = false,
+  hidePostActions = false,
+}: PostProps) {
   const { user } = useUser();
   const country = getCountry(post.country);
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
@@ -180,7 +185,7 @@ export function Post({ post, linkToPost = false }: PostProps) {
           <div className="py-2" />
           <DottedSeparator />
 
-          {user?.id && (
+          {user?.id && !hidePostActions && (
             <div className="py-2 flex items-center space-x-8 mt-2">
               <div className="flex items-center flex-1 gap-x-8">
                 <button
@@ -202,7 +207,7 @@ export function Post({ post, linkToPost = false }: PostProps) {
                   )}
                 </button>
 
-                <CreateCommentDialog
+                <CreateCommentOnPostDialog
                   post={post}
                   username={user.username}
                   usernameImage={user.imageUrl}

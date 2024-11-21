@@ -1,12 +1,13 @@
 import { BackButton } from '@/components/BackButton';
-import { CommentPageSubComment } from '@/components/CommentPageSubComment';
 import { Container } from '@/components/Container';
 import { CountryDropdown } from '@/components/CountryDropdown';
 import { DottedSeparator } from '@/components/DottedSeparator';
 import { PostActions } from '@/components/PostActions';
+import { Reply } from '@/components/Reply';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getCommentById, getSubComments } from '@/lib/queries/getComments';
+import { getCommentById } from '@/lib/queries/getComments';
+import { getReplies } from '@/lib/queries/getReplies';
 import { SignedIn } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
 import { formatDistanceToNow } from 'date-fns';
@@ -19,7 +20,7 @@ export default async function MainCommentPage({
 }) {
   const { userId } = auth();
   const comment = await getCommentById(Number(params.commentId));
-  const subComments = await getSubComments(Number(params.commentId));
+  const replies = await getReplies(Number(params.commentId));
 
   if (!comment) {
     return notFound();
@@ -75,13 +76,9 @@ export default async function MainCommentPage({
         </div>
 
         <h2 className="text-lg font-semibold">Replies</h2>
-        {subComments.map((subComment, index) => (
-          <CommentPageSubComment
-            key={subComment.id}
-            subComment={subComment}
-            userId={userId}
-            postId={comment.post_id}
-          />
+
+        {replies.map((reply) => (
+          <Reply key={reply.id} reply={reply} userId={userId} />
         ))}
       </Container>
       <CountryDropdown className="hidden lg:inline-grid lg:col-span-2" />

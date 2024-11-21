@@ -1,7 +1,11 @@
+import { ChatPage } from '@/components/ChatPage';
 import { Container } from '@/components/Container';
 import { CountryDropdown } from '@/components/CountryDropdown';
 import { Button } from '@/components/ui/button';
+import { createStreamToken } from '@/lib/actions/createStreamToken';
+import { currentUser } from '@clerk/nextjs/server';
 import { Check } from 'lucide-react';
+import { redirect } from 'next/navigation';
 
 const features = [
   {
@@ -18,7 +22,36 @@ const features = [
   },
 ];
 
-export default function MessagesPage() {
+const isPro = true;
+
+export default async function MessagesPage() {
+  const user = await currentUser();
+  const streamApiKey = process.env.STREAM_API_KEY;
+
+  if (!streamApiKey) {
+    return (
+      <Container className="col-span-full text-red-500">
+        Your API key is not set
+      </Container>
+    );
+  }
+
+  if (isPro) {
+    if (!user || !user.username) {
+      redirect('/');
+    }
+    return (
+      <Container className="col-span-full">
+        <ChatPage
+          createToken={createStreamToken}
+          apiKey={streamApiKey}
+          userId={user.id}
+          username={user.username}
+          image={user.imageUrl}
+        />
+      </Container>
+    );
+  }
   return (
     <>
       <Container className="col-span-full lg:col-span-5">

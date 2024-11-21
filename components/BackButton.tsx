@@ -11,7 +11,7 @@ interface BackButtonProps {
 export function BackButton({ text }: BackButtonProps) {
   const router = useRouter();
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 mb-1">
       <Button variant="ghost" onClick={() => router.back()}>
         <ArrowLeft />
       </Button>
