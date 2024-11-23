@@ -21,6 +21,7 @@ import {
 import Image from 'next/image';
 import { DottedSeparator } from './DottedSeparator';
 import { useMediaQuery } from '@/lib/useMediaQuery';
+import { NotificationFeed } from './NotifcationFeed';
 
 const sidebarItems = [
   {
