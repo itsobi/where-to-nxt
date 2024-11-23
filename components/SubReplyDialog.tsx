@@ -22,24 +22,15 @@ import { cn } from '@/lib/utils';
 import { createComment } from '@/lib/actions/createComment';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { createSubCommentReply } from '@/lib/actions/createReply';
-import { SubCommentType } from '@/lib/queries/getComments';
+import { ReplyType } from '@/lib/queries/getComments';
+import { createReply } from '@/lib/actions/createReply';
 
-interface CommentPageSubCommentDialog {
-  comment: SubCommentType;
-  username: string | null;
-  usernameImage: string | null;
-  userProfileImage: string | null;
-  postId: number;
+interface SubReplyDialogProps {
+  reply: ReplyType;
+  postId: string;
 }
 
-export function CommentPageSubCommentDialog({
-  comment,
-  username,
-  usernameImage,
-  userProfileImage,
-  postId,
-}: CommentPageSubCommentDialog) {
+export function SubReplyDialog({ reply, postId }: SubReplyDialogProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
 
   const [content, setContent] = useState('');
@@ -49,13 +40,13 @@ export function CommentPageSubCommentDialog({
   const handleSubmit = async () => {
     setContent('');
     startTransition(async () => {
-      const result = await createSubCommentReply({
-        commentId: comment.comment_id,
-        parentCommentId: comment.id,
-        username: username,
+      const result = await createReply({
+        commentId: reply.comment_id,
         content: content,
-        authorProfileImage: userProfileImage,
-        postId: postId.toString(),
+        authorProfileImage: reply.author_profile_image,
+        username: reply.username,
+        postId: postId,
+        parentReplyId: reply.id,
       });
 
       if (result.success) {
@@ -83,27 +74,27 @@ export function CommentPageSubCommentDialog({
         <div className="relative flex gap-2">
           <div className="absolute left-[20px] top-[40px] w-[2px] h-[calc(100%-40px)] bg-border" />
           <Avatar>
-            <AvatarFallback>{comment.username[0]}</AvatarFallback>
-            <AvatarImage src={comment.author_profile_image} />
+            <AvatarFallback>{reply.username}</AvatarFallback>
+            <AvatarImage src={reply.author_profile_image} />
           </Avatar>
 
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <p>{comment.username}</p>
+              <p>{reply.username}</p>
               <p className="lg:block text-sm text-muted-foreground">
-                {formatDistanceToNow(new Date(comment.created_at), {
+                {formatDistanceToNow(new Date(reply.created_at), {
                   addSuffix: true,
                 })}
               </p>
             </div>
-            <p className="text-sm lg:text-base">{comment.content}</p>
+            <p className="text-sm lg:text-base">{reply.content}</p>
           </div>
         </div>
 
         <div className="flex gap-2">
           <Avatar>
-            <AvatarFallback>{username?.[0]}</AvatarFallback>
-            <AvatarImage src={usernameImage || ''} />
+            <AvatarFallback>{reply.username[0]}</AvatarFallback>
+            <AvatarImage src={reply.author_profile_image || ''} />
           </Avatar>
           <div className="w-full flex flex-col lg:flex-row lg:items-start">
             <textarea

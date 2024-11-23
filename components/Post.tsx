@@ -55,11 +55,7 @@ interface PostProps {
   hidePostActions?: boolean;
 }
 
-export function Post({
-  post,
-  linkToPost = false,
-  hidePostActions = false,
-}: PostProps) {
+export function Post({ post, linkToPost = false }: PostProps) {
   const { user } = useUser();
   const country = getCountry(post.country);
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
@@ -115,10 +111,12 @@ export function Post({
         </TooltipProvider>
       )}
       <div className="flex gap-2">
-        <Avatar>
-          <AvatarImage src={post.author_profile_image} alt={post.username} />
-          <AvatarFallback>{post.username[0].toUpperCase()}</AvatarFallback>
-        </Avatar>
+        <Link href={`/u/${post.author_clerk_user_id}`}>
+          <Avatar>
+            <AvatarImage src={post.author_profile_image} alt={post.username} />
+            <AvatarFallback>{post.username[0].toUpperCase()}</AvatarFallback>
+          </Avatar>
+        </Link>
         <div className="w-full">
           <div className="flex items-center gap-2">
             <p className="font-semibold">{post.username}</p>
@@ -185,9 +183,9 @@ export function Post({
           <div className="py-2" />
           <DottedSeparator />
 
-          {user?.id && !hidePostActions && (
+          {user?.id && (
             <div className="py-2 flex items-center space-x-8 mt-2">
-              <div className="flex items-center flex-1 gap-x-8">
+              <div className="flex items-center flex-1 gap-x-4">
                 <button
                   disabled={isPending}
                   onClick={handleLikePost}
@@ -217,7 +215,7 @@ export function Post({
                 {linkToPost && (
                   <Link
                     href={`/post/${post.id}`}
-                    className="hover:underline underline-offset-4"
+                    className="hover:underline underline-offset-2"
                   >
                     <span className="text-xs lg:text-sm">Go To Post</span>
                   </Link>

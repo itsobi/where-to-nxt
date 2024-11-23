@@ -4,6 +4,8 @@ import { supabaseAdmin } from '@/supabase/admin';
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 
+import { Knock } from '@knocklabs/node';
+
 type createCommentProps = {
   postId: number | undefined;
   comment: string;
@@ -20,6 +22,7 @@ export const createComment = async ({
   auth().protect();
 
   const { userId } = auth();
+  const knock = new Knock(process.env.KNOCK_SECRET_KEY);
 
   if (!userId) {
     throw new Error('User not authenticated');
@@ -67,7 +70,18 @@ export const createComment = async ({
       return { success: false, message: 'Failed to increment comment count' };
     }
 
-    console.log('CREATED COMMENT WITH ID >>>', data?.id);
+    await knock.workflows.trigger('new-comment', {
+      data: {
+        name: username,
+        // TODO: CHANGE THIS TO THE ACTUAL URL
+        url: `http://localhost:3000/post/${postId}`,
+      },
+      recipients: [
+        {
+          id: userId,
+        },
+      ],
+    });
 
     revalidatePath('/');
     revalidatePath(`/post/${postId}`);

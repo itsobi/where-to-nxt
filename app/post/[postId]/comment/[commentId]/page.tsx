@@ -6,12 +6,43 @@ import { PostActions } from '@/components/PostActions';
 import { Reply } from '@/components/Reply';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getCommentById } from '@/lib/queries/getComments';
+import { getCommentById, ReplyType } from '@/lib/queries/getComments';
 import { getReplies } from '@/lib/queries/getReplies';
 import { SignedIn } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
 import { formatDistanceToNow } from 'date-fns';
 import { notFound } from 'next/navigation';
+
+function RenderReplies({
+  replies,
+  userId,
+  postId,
+  parentId = null,
+  depth = 0,
+}: {
+  replies: ReplyType[];
+  userId: string | null;
+  postId: string;
+  parentId?: number | null;
+  depth?: number;
+}) {
+  return replies
+    .filter((reply) => reply.parent_reply_id === parentId)
+    .map((reply) => (
+      <div key={reply.id}>
+        <div className={depth > 0 ? 'ml-8' : ''}>
+          <Reply reply={reply} userId={userId} postId={postId} />
+          <RenderReplies
+            replies={replies}
+            userId={userId}
+            postId={postId}
+            parentId={reply.id}
+            depth={depth + 1}
+          />
+        </div>
+      </div>
+    ));
+}
 
 export default async function MainCommentPage({
   params,
@@ -77,9 +108,11 @@ export default async function MainCommentPage({
 
         <h2 className="text-lg font-semibold">Replies</h2>
 
-        {replies.map((reply) => (
-          <Reply key={reply.id} reply={reply} userId={userId} />
-        ))}
+        <RenderReplies
+          replies={replies}
+          userId={userId}
+          postId={comment.post_id.toString()}
+        />
       </Container>
       <CountryDropdown className="hidden lg:inline-grid lg:col-span-2" />
     </>

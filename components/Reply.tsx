@@ -1,15 +1,50 @@
+'use client';
+
 import { ReplyType } from '@/lib/queries/getComments';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
 import { Skeleton } from './ui/skeleton';
+import { SubReplyDialog } from './SubReplyDialog';
+import { SignedIn, useUser } from '@clerk/nextjs';
+import { ThumbsUp } from 'lucide-react';
+import { useMediaQuery } from '@/lib/useMediaQuery';
+import { likeReply } from '@/lib/actions/like-actions';
+import { toast } from 'sonner';
+import { useTransition } from 'react';
 
 interface ReplyProps {
   reply: ReplyType;
+  postId: string;
   userId: string | null;
 }
 
-export function Reply({ reply, userId }: ReplyProps) {
+export function Reply({ reply, postId, userId }: ReplyProps) {
+  const isLargeScreen = useMediaQuery('(min-width: 1024px)');
+  const [isPending, startTransition] = useTransition();
+  const { user } = useUser();
+
+  const alreadyLiked = user?.id
+    ? reply.liked_by.some((like) => like.clerk_user_id === user.id)
+    : false;
+
+  console.log(reply);
+
+  const handleLikeReply = async () => {
+    startTransition(async () => {
+      const response = await likeReply(
+        alreadyLiked,
+        reply.id,
+        postId,
+        reply.comment_id?.toString() || ''
+      );
+
+      if (!response.success) {
+        toast.error(response.message);
+      }
+    });
+  };
+
   return (
     <div className={cn('p-4')}>
       <div className="flex flex-col gap-4">
@@ -21,7 +56,7 @@ export function Reply({ reply, userId }: ReplyProps) {
                 alt={reply.username}
               />
               <AvatarFallback>
-                {reply.username.toLocaleUpperCase()}
+                {reply.username[0].toLocaleUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -44,6 +79,30 @@ export function Reply({ reply, userId }: ReplyProps) {
                 <Skeleton className="w-[75%] h-4" />
               </div>
             )}
+
+            <div className="flex items-center gap-4 mt-4">
+              <SignedIn>
+                <button
+                  onClick={handleLikeReply}
+                  disabled={isPending}
+                  className="relative"
+                >
+                  <ThumbsUp
+                    size={isLargeScreen ? 18 : 16}
+                    className={cn(
+                      'text-black hover:text-green-400',
+                      alreadyLiked && 'text-green-400'
+                    )}
+                  />
+                  {reply.like_count > 0 && (
+                    <span className="absolute -top-2 -right-2 text-xs text-black">
+                      {reply.like_count}
+                    </span>
+                  )}
+                </button>
+                <SubReplyDialog reply={reply} postId={postId} />
+              </SignedIn>
+            </div>
           </div>
         </div>
       </div>

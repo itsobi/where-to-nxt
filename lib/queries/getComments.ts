@@ -23,6 +23,10 @@ export type ReplyType = {
   username: string;
   content: string;
   author_profile_image: string;
+  like_count: number;
+  liked_by: {
+    clerk_user_id: string;
+  }[];
 };
 
 export const getCommentById = async (commentId: number) => {

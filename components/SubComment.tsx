@@ -11,7 +11,7 @@ export function SubComments({ replies, commentId, postId }: SubCommentsProps) {
   if (replies.length) {
     return (
       <Link href={`/post/${postId}/comment/${commentId}`}>
-        <p className="text-xs text-gray-500 mt-4 hover:underline">
+        <p className="text-xs text-gray-500 mt-4 hover:underline underline-offset-2">
           View all replies
         </p>
       </Link>

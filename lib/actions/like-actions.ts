@@ -85,8 +85,6 @@ export const likeComment = async (
 ) => {
   auth().protect();
 
-  console.log('already liked', alreadyLiked);
-
   const { userId } = auth();
 
   if (!commentId || !userId) {
@@ -144,6 +142,77 @@ export const likeComment = async (
     return {
       success: false,
       message: 'Failed to like comment',
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+};
+
+export const likeReply = async (
+  alreadyLiked: boolean,
+  replyId: number,
+  postId: string,
+  commentId: string
+) => {
+  auth().protect();
+
+  const { userId } = auth();
+
+  if (!replyId || !userId) {
+    throw new Error('Reply ID or user ID is missing');
+  }
+
+  try {
+    if (alreadyLiked) {
+      // Unlike the reply
+      const { error: deleteError } = await supabaseAdmin
+        .from('reply_likes')
+        .delete()
+        .eq('reply_id', replyId)
+        .eq('clerk_user_id', userId);
+
+      if (deleteError) {
+        console.error('Error removing like:', deleteError);
+        throw deleteError;
+      }
+
+      const { error: decrementError } = await supabaseAdmin.rpc(
+        'decrement_reply_likes',
+        { reply_id: replyId }
+      );
+      if (decrementError) {
+        console.error('Error decrementing likes:', decrementError);
+        throw decrementError;
+      }
+    } else {
+      // Like the reply
+      const { error: insertError } = await supabaseAdmin
+        .from('reply_likes')
+        .insert({ reply_id: replyId, clerk_user_id: userId });
+
+      if (insertError) {
+        console.error('Error inserting like:', insertError);
+        throw insertError;
+      }
+
+      const { error: incrementError } = await supabaseAdmin.rpc(
+        'increment_reply_likes',
+        { reply_id: replyId }
+      );
+      if (incrementError) {
+        console.error('Error incrementing likes:', incrementError);
+        throw incrementError;
+      }
+    }
+
+    revalidatePath('/');
+    revalidatePath(`/post/${postId}/comment/${commentId}`);
+    console.log('LIKE REPLY SUCCESSFUL');
+    return { success: true };
+  } catch (error) {
+    console.error('Error in likeReply:', error);
+    return {
+      success: false,
+      message: 'Failed to like reply',
       error: error instanceof Error ? error.message : String(error),
     };
   }

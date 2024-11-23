@@ -37,7 +37,6 @@ export function CreateCommentOnPostDialog({
   userProfileImage,
 }: CreateCommentOnPostDialogProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
-  console.log('POST >>>', post);
 
   const [comment, setComment] = useState('');
   const [isPending, startTransition] = useTransition();

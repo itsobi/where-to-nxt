@@ -10,15 +10,7 @@ type createReplyProps = {
   authorProfileImage: string | null;
   username: string | null;
   postId: string;
-};
-
-type createSubCommentReplyProps = {
-  commentId: number | undefined;
-  parentCommentId: number | undefined;
-  content: string;
-  authorProfileImage: string | null;
-  username: string | null;
-  postId: string;
+  parentReplyId?: number | null;
 };
 
 export const createReply = async ({
@@ -27,6 +19,7 @@ export const createReply = async ({
   authorProfileImage,
   username,
   postId,
+  parentReplyId,
 }: createReplyProps) => {
   auth().protect();
 
@@ -42,72 +35,36 @@ export const createReply = async ({
     username: username,
     content: content,
     author_profile_image: authorProfileImage,
+    parent_reply_id: parentReplyId,
   });
 
   if (error) {
-    console.error('Error creating sub comment:', error);
-    return { success: false, message: 'Unable to create sub comment' };
+    console.error('Error creating comment:', error);
+    return { success: false, message: 'Unable to create comment' };
   }
 
-  const { error: incrementError } = await supabaseAdmin.rpc(
-    'increment_sub_comment_count',
-    { comment_id: commentId }
-  );
+  // Only increment the comment count if this is a direct reply to the top comment (not a reply to another reply)
+  if (!parentReplyId) {
+    const { error: incrementError } = await supabaseAdmin.rpc(
+      'increment_reply_count',
+      { comment_id: commentId }
+    );
 
-  if (incrementError) {
-    console.error('Error incrementing sub comment count:', incrementError);
-    return { success: false, message: 'Unable to increment sub comment count' };
+    if (incrementError) {
+      console.error('Error incrementing comment count:', incrementError);
+      return {
+        success: false,
+        message: 'Unable to increment comment count',
+      };
+    }
   }
 
   revalidatePath('/');
   revalidatePath(`/post/${postId}`);
 
+  if (parentReplyId) {
+    return { success: true, message: 'Reply created successfully!' };
+  }
+
   return { success: true, message: 'Comment created successfully!' };
-};
-
-export const createSubCommentReply = async ({
-  commentId,
-  parentCommentId,
-  postId,
-  content,
-  authorProfileImage,
-  username,
-}: createSubCommentReplyProps) => {
-  auth().protect();
-
-  const { userId } = auth();
-
-  if (!userId) {
-    throw new Error('Unauthorized');
-  }
-
-  const { error } = await supabaseAdmin.from('sub_comments').insert({
-    comment_id: commentId,
-    parent_sub_comment_id: parentCommentId,
-    author_clerk_user_id: userId,
-    username: username,
-    content: content,
-    author_profile_image: authorProfileImage,
-  });
-
-  if (error) {
-    console.error('Error creating sub comment reply:', error);
-    return { success: false, message: 'Unable to create reply' };
-  }
-
-  const { error: incrementError } = await supabaseAdmin.rpc(
-    'increment_sub_comment_count',
-    { comment_id: commentId }
-  );
-
-  if (incrementError) {
-    console.error('Error incrementing sub comment count:', incrementError);
-    return { success: false, message: 'Unable to increment sub comment count' };
-  }
-
-  revalidatePath(`/post/${postId}/comment/${commentId}`);
-
-  console.log('CREATED SUB COMMENT REPLY WITH POST ID >>>', postId);
-
-  return { success: true, message: 'Reply created successfully!' };
 };
