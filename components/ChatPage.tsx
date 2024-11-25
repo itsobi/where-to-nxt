@@ -2,8 +2,8 @@
 
 import 'stream-chat-react/dist/css/v2/index.css';
 
-import { useCallback, useState } from 'react';
-import { ChannelSort, StreamChat } from 'stream-chat';
+import { useCallback, useEffect, useState } from 'react';
+import { Channel as StreamChannel, ChannelSort, StreamChat } from 'stream-chat';
 import {
   Channel,
   ChannelHeader,
@@ -16,6 +16,8 @@ import {
   useCreateChatClient,
   Window,
 } from 'stream-chat-react';
+import { useMediaQuery } from '@/lib/useMediaQuery';
+import { BackButton } from './BackButton';
 
 interface ChatPageProps {
   apiKey: string;
@@ -32,6 +34,8 @@ export function ChatPage({
   image,
   createToken,
 }: ChatPageProps) {
+  const isLargeScreen = useMediaQuery('(min-width: 1024px)');
+  const [channel, setChannel] = useState<StreamChannel>();
   const tokenProvider = useCallback(async () => {
     return await createToken(userId);
   }, [createToken, userId]);
@@ -53,6 +57,20 @@ export function ChatPage({
   };
   const options = { limit: 10 };
 
+  useEffect(() => {
+    if (!client) return;
+
+    const channel = client.channel('messaging', {
+      name: 'test',
+      members: [
+        'user_2nlw60cA8F447iOC5j7zyEskOmp',
+        'user_2pEkPoosTFmEjI3zL9z6ANXGk5A',
+      ],
+    });
+
+    setChannel(channel);
+  }, [client]);
+
   if (!client)
     return (
       <div className="text-center text-primary-blue">
@@ -61,16 +79,27 @@ export function ChatPage({
     );
 
   return (
-    <Chat client={client}>
-      <ChannelList filters={filters} sort={sort} options={options} />
-      <Channel>
-        <Window>
-          <ChannelHeader />
-          <MessageList />
-          <MessageInput />
-        </Window>
-        <Thread />
-      </Channel>
-    </Chat>
+    <div className="h-screen">
+      <Chat client={client}>
+        <div className="flex h-full">
+          <ChannelList filters={filters} sort={sort} options={options} />
+
+          <div className="w-3/4 flex flex-col">
+            <Channel>
+              <Window>
+                {!isLargeScreen && <BackButton label="Back" />}
+                <ChannelHeader />
+                <div className="h-full overflow-y-auto">
+                  <MessageList />
+                </div>
+                <MessageInput />
+                <div className="pb-6" />
+              </Window>
+              <Thread />
+            </Channel>
+          </div>
+        </div>
+      </Chat>
+    </div>
   );
 }

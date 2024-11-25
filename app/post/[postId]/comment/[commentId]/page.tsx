@@ -60,7 +60,7 @@ export default async function MainCommentPage({
   return (
     <>
       <Container className="col-span-full lg:col-span-5">
-        <BackButton text="Comment" />
+        <BackButton label="Comment" />
         <div className="border rounded shadow-md p-4 relative mb-4">
           <div className="flex gap-2">
             <Avatar>

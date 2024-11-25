@@ -17,6 +17,10 @@ export const NotificationFeed = () => {
     return;
   }
 
+  if (!process.env.NEXT_PUBLIC_KNOCK_CHANNEL_ID) {
+    return;
+  }
+
   const [isVisible, setIsVisible] = useState(false);
   const notifButtonRef = useRef(null);
   const { user } = useUser();
@@ -30,7 +34,7 @@ export const NotificationFeed = () => {
       apiKey={process.env.NEXT_PUBLIC_KNOCK_PUBLIC_KEY}
       userId={user.id}
     >
-      <KnockFeedProvider feedId={'new-comment'}>
+      <KnockFeedProvider feedId={process.env.NEXT_PUBLIC_KNOCK_CHANNEL_ID}>
         <>
           <NotificationIconButton
             ref={notifButtonRef}

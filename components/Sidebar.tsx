@@ -21,7 +21,6 @@ import {
 import Image from 'next/image';
 import { DottedSeparator } from './DottedSeparator';
 import { useMediaQuery } from '@/lib/useMediaQuery';
-import { NotificationFeed } from './NotifcationFeed';
 
 const sidebarItems = [
   {
@@ -44,6 +43,8 @@ const sidebarItems = [
 export function Sidebar() {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
   const pathname = usePathname();
+
+  const isMessagesPage = pathname.startsWith('/messages');
   const { user } = useUser();
   if (!user) {
     return (
@@ -83,7 +84,12 @@ export function Sidebar() {
     );
   } else {
     return (
-      <aside className="h-screen bg-moon w-16 lg:w-56 flex flex-col items-center px-4 overflow-hidden relative">
+      <aside
+        className={cn(
+          'h-screen bg-moon w-16 lg:w-56 flex flex-col items-center px-4 overflow-hidden relative',
+          isMessagesPage && !isLargeScreen && 'hidden'
+        )}
+      >
         <div className="flex items-center gap-x-2 py-2 text-primary-blue">
           <Image src="/logo.svg" alt="Where To NXT?" width={40} height={100} />
           <h4 className="hidden lg:flex text-lg font-semibold">

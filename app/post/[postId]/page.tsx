@@ -31,7 +31,7 @@ export default async function PostPage({
   return (
     <>
       <Container className="col-span-full lg:col-span-5">
-        <BackButton text="Post" />
+        <BackButton label="Post" />
         <div className="h-full flex flex-col">
           <Post post={post} />
 

@@ -4,7 +4,6 @@ import { CommentType } from '@/lib/queries/getPosts';
 import { Trash2 } from 'lucide-react';
 import { CreateReplyDialog } from './CreateReplyDialog';
 import { useMediaQuery } from '@/lib/useMediaQuery';
-import { useUser } from '@clerk/nextjs';
 import { ThumbsUp } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -80,9 +79,6 @@ export function PostActions({ comment, userId }: PostActionsProps) {
         </button>
         <CreateReplyDialog
           comment={comment}
-          username={comment.username}
-          usernameImage={comment.author_profile_image}
-          userProfileImage={comment.author_profile_image}
           postId={comment.post_id.toString()}
         />
       </div>

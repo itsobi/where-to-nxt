@@ -1,40 +1,40 @@
 'use server';
 
 import { supabaseAdmin } from '@/supabase/admin';
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
+import { Knock } from '@knocklabs/node';
 import { revalidatePath } from 'next/cache';
 
 type createReplyProps = {
   commentId: number | undefined;
   content: string;
-  authorProfileImage: string | null;
-  username: string | null;
   postId: string;
   parentReplyId?: number | null;
+  authorId: string;
 };
 
 export const createReply = async ({
   commentId,
   content,
-  authorProfileImage,
-  username,
   postId,
   parentReplyId,
+  authorId,
 }: createReplyProps) => {
   auth().protect();
 
-  const { userId } = auth();
+  const user = await currentUser();
+  const knock = new Knock(process.env.KNOCK_SECRET_KEY);
 
-  if (!userId) {
+  if (!user?.id) {
     throw new Error('Unauthorized');
   }
 
   const { error } = await supabaseAdmin.from('replies').insert({
     comment_id: commentId,
-    author_clerk_user_id: userId,
-    username: username,
+    author_clerk_user_id: user.id,
+    username: user.username,
     content: content,
-    author_profile_image: authorProfileImage,
+    author_profile_image: user.imageUrl,
     parent_reply_id: parentReplyId,
   });
 
@@ -58,6 +58,22 @@ export const createReply = async ({
       };
     }
   }
+
+  await knock.workflows.trigger('new-reply', {
+    actor: {
+      id: user.id,
+    },
+    data: {
+      sender: user.username,
+      // TODO: CHANGE THIS TO THE ACTUAL URL
+      url: `http://localhost:3000/post/${postId}/comment/${commentId}`,
+    },
+    recipients: [
+      {
+        id: authorId,
+      },
+    ],
+  });
 
   revalidatePath('/');
   revalidatePath(`/post/${postId}`);

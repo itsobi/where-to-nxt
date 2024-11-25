@@ -10,37 +10,27 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-import { CommentType, PostType } from '@/lib/queries/getPosts';
-import { MessageCircle, ThumbsUp } from 'lucide-react';
+import { CommentType } from '@/lib/queries/getPosts';
+import { MessageCircle } from 'lucide-react';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
-import { User } from '@clerk/nextjs/server';
 import { Button } from './ui/button';
-import { useRef, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { cn } from '@/lib/utils';
-import { createComment } from '@/lib/actions/createComment';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 import { createReply } from '@/lib/actions/createReply';
+import { useUser } from '@clerk/nextjs';
 
 interface CreateReplyDialogProps {
   comment: CommentType;
-  username: string | null;
-  usernameImage: string | null;
-  userProfileImage: string | null;
   postId: string;
 }
 
-export function CreateReplyDialog({
-  comment,
-  username,
-  usernameImage,
-  userProfileImage,
-  postId,
-}: CreateReplyDialogProps) {
+// THIS IS ON THE POST PAGE
+export function CreateReplyDialog({ comment, postId }: CreateReplyDialogProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
-
+  const { user } = useUser();
   const [content, setContent] = useState('');
   const [isPending, startTransition] = useTransition();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -51,9 +41,8 @@ export function CreateReplyDialog({
       const result = await createReply({
         commentId: comment.id,
         content: content,
-        authorProfileImage: userProfileImage,
-        username: username,
         postId: postId,
+        authorId: user?.id || '',
       });
 
       if (result.success) {
@@ -105,8 +94,8 @@ export function CreateReplyDialog({
 
         <div className="flex gap-2">
           <Avatar>
-            <AvatarFallback>{username?.[0]}</AvatarFallback>
-            <AvatarImage src={usernameImage || ''} />
+            <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
+            <AvatarImage src={user?.imageUrl || ''} />
           </Avatar>
           <div className="w-full flex flex-col lg:flex-row lg:items-start">
             <textarea

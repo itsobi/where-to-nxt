@@ -10,20 +10,17 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-import { CommentType, PostType } from '@/lib/queries/getPosts';
 import { MessageCircle, ThumbsUp } from 'lucide-react';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
-import { User } from '@clerk/nextjs/server';
 import { Button } from './ui/button';
-import { useRef, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { cn } from '@/lib/utils';
-import { createComment } from '@/lib/actions/createComment';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 import { ReplyType } from '@/lib/queries/getComments';
 import { createReply } from '@/lib/actions/createReply';
+import { useUser } from '@clerk/nextjs';
 
 interface SubReplyDialogProps {
   reply: ReplyType;
@@ -32,6 +29,7 @@ interface SubReplyDialogProps {
 
 export function SubReplyDialog({ reply, postId }: SubReplyDialogProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
+  const { user } = useUser();
 
   const [content, setContent] = useState('');
   const [isPending, startTransition] = useTransition();
@@ -43,10 +41,9 @@ export function SubReplyDialog({ reply, postId }: SubReplyDialogProps) {
       const result = await createReply({
         commentId: reply.comment_id,
         content: content,
-        authorProfileImage: reply.author_profile_image,
-        username: reply.username,
         postId: postId,
         parentReplyId: reply.id,
+        authorId: reply.author_clerk_user_id,
       });
 
       if (result.success) {
@@ -93,8 +90,8 @@ export function SubReplyDialog({ reply, postId }: SubReplyDialogProps) {
 
         <div className="flex gap-2">
           <Avatar>
-            <AvatarFallback>{reply.username[0]}</AvatarFallback>
-            <AvatarImage src={reply.author_profile_image || ''} />
+            <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
+            <AvatarImage src={user?.imageUrl} />
           </Avatar>
           <div className="w-full flex flex-col lg:flex-row lg:items-start">
             <textarea

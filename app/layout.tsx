@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Sidebar } from '@/components/Sidebar';
-import { ClerkProvider, SignedIn } from '@clerk/nextjs';
+import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from '@/components/ui/sonner';
-import { NotificationFeed } from '@/components/NotifcationFeed';
-import { Header } from '@/components/Header';
 
 export const metadata: Metadata = {
   title: 'Where To NXT?',
@@ -22,17 +20,9 @@ export default function RootLayout({
       <html lang="en">
         <body className="h-screen flex overflow-hidden">
           <Sidebar />
-
-          <div className="flex flex-col flex-1">
-            <SignedIn>
-              <div className="grid grid-cols-7">
-                <Header />
-              </div>
-            </SignedIn>
-            <main className="flex-1 p-4 grid grid-cols-7 overflow-y-auto">
-              {children}
-            </main>
-          </div>
+          <main className="flex-1 p-4 grid grid-cols-7 overflow-y-auto">
+            {children}
+          </main>
           <Toaster position="bottom-center" richColors />
         </body>
       </html>

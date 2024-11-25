@@ -111,12 +111,17 @@ export function Post({ post, linkToPost = false }: PostProps) {
         </TooltipProvider>
       )}
       <div className="flex gap-2">
-        <Link href={`/u/${post.author_clerk_user_id}`}>
-          <Avatar>
-            <AvatarImage src={post.author_profile_image} alt={post.username} />
-            <AvatarFallback>{post.username[0].toUpperCase()}</AvatarFallback>
-          </Avatar>
-        </Link>
+        <div>
+          <Link href={`/u/${post.author_clerk_user_id}`}>
+            <Avatar>
+              <AvatarImage
+                src={post.author_profile_image}
+                alt={post.username}
+              />
+              <AvatarFallback>{post.username[0].toUpperCase()}</AvatarFallback>
+            </Avatar>
+          </Link>
+        </div>
         <div className="w-full">
           <div className="flex items-center gap-2">
             <p className="font-semibold">{post.username}</p>
@@ -205,12 +210,7 @@ export function Post({ post, linkToPost = false }: PostProps) {
                   )}
                 </button>
 
-                <CreateCommentOnPostDialog
-                  post={post}
-                  username={user.username}
-                  usernameImage={user.imageUrl}
-                  userProfileImage={user.imageUrl}
-                />
+                <CreateCommentOnPostDialog post={post} />
 
                 {linkToPost && (
                   <Link

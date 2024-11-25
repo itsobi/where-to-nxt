@@ -31,7 +31,23 @@ export const getCountry = (code: string) => {
     return {
       name: country.name.common,
       flag: country.flag || '',
+      code: country.cca2,
     };
   }
   return false;
+};
+
+type CountryCode = {
+  country: string;
+};
+
+export type CountryResult = {
+  name: string;
+  flag: string;
+  code: string;
+};
+export const getCountries = (countryCodes: CountryCode[]): CountryResult[] => {
+  return countryCodes
+    .map((code) => getCountry(code.country))
+    .filter((country): country is CountryResult => country !== null);
 };

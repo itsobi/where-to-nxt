@@ -22,22 +22,17 @@ import { cn } from '@/lib/utils';
 import { createComment } from '@/lib/actions/createComment';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 
 interface CreateCommentOnPostDialogProps {
   post: PostType;
-  username: string | null;
-  usernameImage: string | null;
-  userProfileImage: string | null;
 }
 
 export function CreateCommentOnPostDialog({
   post,
-  username,
-  usernameImage,
-  userProfileImage,
 }: CreateCommentOnPostDialogProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
-
+  const { user } = useUser();
   const [comment, setComment] = useState('');
   const [isPending, startTransition] = useTransition();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -50,8 +45,7 @@ export function CreateCommentOnPostDialog({
       const result = await createComment({
         postId: post.id,
         comment: comment,
-        authorProfileImage: userProfileImage,
-        username: username,
+        authorId: post.author_clerk_user_id,
       });
 
       if (result.success) {
@@ -104,8 +98,8 @@ export function CreateCommentOnPostDialog({
 
         <div className="flex gap-2">
           <Avatar>
-            <AvatarFallback>{username?.[0]}</AvatarFallback>
-            <AvatarImage src={usernameImage || ''} />
+            <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
+            <AvatarImage src={user?.imageUrl || ''} />
           </Avatar>
           <div className="w-full flex flex-col lg:flex-row lg:items-start">
             <textarea

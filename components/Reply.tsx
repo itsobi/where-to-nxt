@@ -7,11 +7,13 @@ import { formatDistanceToNow } from 'date-fns';
 import { Skeleton } from './ui/skeleton';
 import { SubReplyDialog } from './SubReplyDialog';
 import { SignedIn, useUser } from '@clerk/nextjs';
-import { ThumbsUp } from 'lucide-react';
+import { ThumbsUp, Trash2 } from 'lucide-react';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { likeReply } from '@/lib/actions/like-actions';
 import { toast } from 'sonner';
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Button } from './ui/button';
 
 interface ReplyProps {
   reply: ReplyType;
@@ -21,14 +23,13 @@ interface ReplyProps {
 
 export function Reply({ reply, postId, userId }: ReplyProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { user } = useUser();
 
   const alreadyLiked = user?.id
     ? reply.liked_by.some((like) => like.clerk_user_id === user.id)
     : false;
-
-  console.log(reply);
 
   const handleLikeReply = async () => {
     startTransition(async () => {
@@ -81,27 +82,25 @@ export function Reply({ reply, postId, userId }: ReplyProps) {
             )}
 
             <div className="flex items-center gap-4 mt-4">
-              <SignedIn>
-                <button
-                  onClick={handleLikeReply}
-                  disabled={isPending}
-                  className="relative"
-                >
-                  <ThumbsUp
-                    size={isLargeScreen ? 18 : 16}
-                    className={cn(
-                      'text-black hover:text-green-400',
-                      alreadyLiked && 'text-green-400'
-                    )}
-                  />
-                  {reply.like_count > 0 && (
-                    <span className="absolute -top-2 -right-2 text-xs text-black">
-                      {reply.like_count}
-                    </span>
+              <button
+                onClick={handleLikeReply}
+                disabled={isPending}
+                className="relative"
+              >
+                <ThumbsUp
+                  size={isLargeScreen ? 18 : 16}
+                  className={cn(
+                    'text-black hover:text-green-400',
+                    alreadyLiked && 'text-green-400'
                   )}
-                </button>
-                <SubReplyDialog reply={reply} postId={postId} />
-              </SignedIn>
+                />
+                {reply.like_count > 0 && (
+                  <span className="absolute -top-2 -right-2 text-xs text-black">
+                    {reply.like_count}
+                  </span>
+                )}
+              </button>
+              <SubReplyDialog reply={reply} postId={postId} />
             </div>
           </div>
         </div>

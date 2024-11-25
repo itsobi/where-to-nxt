@@ -1,7 +1,7 @@
 'use server';
 
 import { supabaseAdmin } from '@/supabase/admin';
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 
 import { Knock } from '@knocklabs/node';
@@ -9,22 +9,20 @@ import { Knock } from '@knocklabs/node';
 type createCommentProps = {
   postId: number | undefined;
   comment: string;
-  authorProfileImage: string | null;
-  username: string | null;
+  authorId: string;
 };
 
 export const createComment = async ({
   postId,
   comment,
-  authorProfileImage,
-  username,
+  authorId,
 }: createCommentProps) => {
   auth().protect();
 
-  const { userId } = auth();
+  const user = await currentUser();
   const knock = new Knock(process.env.KNOCK_SECRET_KEY);
 
-  if (!userId) {
+  if (!user?.id) {
     throw new Error('User not authenticated');
   }
 
@@ -47,10 +45,10 @@ export const createComment = async ({
       .from('comments')
       .insert({
         post_id: postId,
-        author_clerk_user_id: userId,
+        author_clerk_user_id: user.id,
         content: trimmedComment,
-        author_profile_image: authorProfileImage,
-        username: username,
+        author_profile_image: user.imageUrl,
+        username: user.username,
       })
       .select()
       .single();
@@ -71,14 +69,17 @@ export const createComment = async ({
     }
 
     await knock.workflows.trigger('new-comment', {
+      actor: {
+        id: user.id,
+      },
       data: {
-        name: username,
+        sender: user.username,
         // TODO: CHANGE THIS TO THE ACTUAL URL
         url: `http://localhost:3000/post/${postId}`,
       },
       recipients: [
         {
-          id: userId,
+          id: authorId,
         },
       ],
     });
