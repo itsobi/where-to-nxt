@@ -1,7 +1,7 @@
 import { BackButton } from '@/components/BackButton';
 import { Comment } from '@/components/Comment';
 import { Container } from '@/components/Container';
-import { CountryDropdown } from '@/components/CountryDropdown';
+import { PopularCountryList } from '@/components/PopularCountryList';
 import { CustomAlertDialog } from '@/components/CustomAlertDialog';
 import { Post } from '@/components/Post';
 import { getComments } from '@/lib/queries/getComments';
@@ -49,7 +49,7 @@ export default async function PostPage({
           )}
         </div>
       </Container>
-      <CountryDropdown className="hidden lg:inline-grid lg:col-span-2" />
+      <PopularCountryList className="hidden lg:inline-grid lg:col-span-2" />
     </>
   );
 }

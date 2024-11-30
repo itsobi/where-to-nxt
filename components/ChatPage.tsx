@@ -18,6 +18,8 @@ import {
 } from 'stream-chat-react';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { BackButton } from './BackButton';
+import { useRouter } from 'next/navigation';
+import { chatRoomId } from '@/lib/utils';
 
 interface ChatPageProps {
   apiKey: string;
@@ -25,6 +27,7 @@ interface ChatPageProps {
   userId: string;
   username: string;
   image: string;
+  recipientUserId: string;
 }
 
 export function ChatPage({
@@ -33,9 +36,11 @@ export function ChatPage({
   username,
   image,
   createToken,
+  recipientUserId,
 }: ChatPageProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
-  const [channel, setChannel] = useState<StreamChannel>();
+  const router = useRouter();
+
   const tokenProvider = useCallback(async () => {
     return await createToken(userId);
   }, [createToken, userId]);
@@ -61,15 +66,25 @@ export function ChatPage({
     if (!client) return;
 
     const channel = client.channel('messaging', {
-      name: 'test',
-      members: [
-        'user_2nlw60cA8F447iOC5j7zyEskOmp',
-        'user_2pEkPoosTFmEjI3zL9z6ANXGk5A',
-      ],
+      members: [userId, recipientUserId],
     });
 
-    setChannel(channel);
-  }, [client]);
+    channel
+      .watch()
+      .then(() => {
+        channel.queryMembers({});
+        console.log('Channel created and watched successfully');
+      })
+      .catch((error) => {
+        console.error('Error watching channel:', error);
+      });
+
+    return () => {
+      // stop watching channel first, then disconnect client
+
+      channel._disconnect();
+    };
+  }, [client, userId, recipientUserId]);
 
   if (!client)
     return (
@@ -87,7 +102,6 @@ export function ChatPage({
           <div className="w-3/4 flex flex-col">
             <Channel>
               <Window>
-                {!isLargeScreen && <BackButton label="Back" />}
                 <ChannelHeader />
                 <div className="h-full overflow-y-auto">
                   <MessageList />

@@ -1,3 +1,5 @@
+'server only';
+
 import { supabaseAdmin } from '@/supabase/admin';
 
 export type CommentType = {

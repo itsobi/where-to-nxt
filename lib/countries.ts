@@ -1,3 +1,5 @@
+'server only';
+
 import countries, { Country } from 'world-countries';
 
 // Helper function to group countries by region

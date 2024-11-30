@@ -1,3 +1,5 @@
+'server only';
+
 import { supabaseAdmin } from '@/supabase/admin';
 import { PostType } from './getPosts';
 

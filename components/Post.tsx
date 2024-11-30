@@ -31,6 +31,7 @@ import { likePost } from '@/lib/actions/like-actions';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { CreateCommentOnPostDialog } from './CreateCommentDialog';
+import { UserAvatarPopover } from './UserAvatarPopover';
 
 const getGridClass = (imageCount: number) => {
   switch (imageCount) {
@@ -111,16 +112,12 @@ export function Post({ post, linkToPost = false }: PostProps) {
         </TooltipProvider>
       )}
       <div className="flex gap-2">
-        <div>
-          <Link href={`/u/${post.author_clerk_user_id}`}>
-            <Avatar>
-              <AvatarImage
-                src={post.author_profile_image}
-                alt={post.username}
-              />
-              <AvatarFallback>{post.username[0].toUpperCase()}</AvatarFallback>
-            </Avatar>
-          </Link>
+        <div className="p-1">
+          <UserAvatarPopover
+            author_clerk_user_id={post.author_clerk_user_id}
+            author_username={post.username}
+            author_profile_image={post.author_profile_image}
+          />
         </div>
         <div className="w-full">
           <div className="flex items-center gap-2">

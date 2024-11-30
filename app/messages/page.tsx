@@ -1,18 +1,28 @@
-import { ChatPage } from '@/components/ChatPage';
+import { BackButton } from '@/components/BackButton';
 import { Container } from '@/components/Container';
-import { CountryDropdown } from '@/components/CountryDropdown';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { createStreamToken } from '@/lib/actions/createStreamToken';
-import { currentUser } from '@clerk/nextjs/server';
+import { getChatRooms } from '@/lib/queries/getChatRooms';
+import { auth } from '@clerk/nextjs/server';
 import { Check } from 'lucide-react';
 import { redirect } from 'next/navigation';
+import { getProUsers } from '@/lib/queries/getProUser';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Conversation } from './_components/Conversation';
 
 const features = [
   {
     description: 'Access to direct messaging',
   },
   {
-    description: '24/7 customer support',
+    description: '24/7 customer support ',
   },
   {
     description: 'Enabled notifications',
@@ -25,36 +35,123 @@ const features = [
 const isPro = true;
 
 export default async function MessagesPage() {
-  const user = await currentUser();
-  const streamApiKey = process.env.STREAM_API_KEY;
+  // const user = await currentUser();
+  const { userId } = auth();
 
-  if (!streamApiKey) {
-    return (
-      <Container className="col-span-full text-red-500">
-        Your API key is not set
-      </Container>
-    );
+  if (!userId) {
+    redirect('/');
   }
+
+  const chatRooms = await getChatRooms(userId);
+  const proUsers = await getProUsers(userId);
 
   if (isPro) {
-    if (!user || !user.username) {
+    if (!userId) {
       redirect('/');
     }
+
+    if (chatRooms.length === 0) {
+      return (
+        <div className="flex flex-col justify-center items-center h-full w-full text-center">
+          <h1 className="text-2xl font-semibold">Select a conversation</h1>
+          <p className="text-muted-foreground">
+            Continue a conversation or start a new one with a Pro user!
+          </p>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="mt-4 font-semibold">
+                Start a conversation
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>New Message</DialogTitle>
+              </DialogHeader>
+              <ScrollArea className="h-[300px] pr-4">
+                {proUsers.map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent cursor-pointer"
+                  >
+                    <Avatar>
+                      <AvatarImage
+                        src={user.profile_image}
+                        alt={user.username}
+                      />
+                      <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium leading-none">
+                        {user.username}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </ScrollArea>
+            </DialogContent>
+          </Dialog>
+        </div>
+      );
+    }
+
     return (
-      <Container className="col-span-full">
-        <ChatPage
-          createToken={createStreamToken}
-          apiKey={streamApiKey}
-          userId={user.id}
-          username={user.username}
-          image={user.imageUrl}
-        />
-      </Container>
+      <>
+        {/* large screen */}
+
+        <div className="hidden lg:flex flex-col justify-center items-center h-full w-full text-center">
+          <h1 className="text-2xl font-semibold">Select a conversation</h1>
+          <p className="text-muted-foreground">
+            Continue a conversation or start a new one with a Pro user!
+          </p>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="mt-4 font-semibold">
+                Start a conversation
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>New Message</DialogTitle>
+              </DialogHeader>
+              <ScrollArea className="h-[300px] pr-4">
+                {proUsers.map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent cursor-pointer"
+                  >
+                    <Avatar>
+                      <AvatarImage
+                        src={user.profile_image}
+                        alt={user.username}
+                      />
+                      <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium leading-none">
+                        {user.username}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </ScrollArea>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* small screen */}
+        <div className="lg:hidden">
+          {chatRooms.map((chatRoom) => (
+            <Conversation key={chatRoom.id} chatRoom={chatRoom} />
+          ))}
+        </div>
+      </>
     );
   }
+
   return (
     <>
-      <Container className="col-span-full lg:col-span-5">
+      <Container className="col-span-full">
+        <BackButton label="Back" />
         <div className="flex flex-col justify-center items-center">
           <div className="text-center space-y-2 mb-16">
             <h1 className="text-xl lg:text-2xl font-semibold text-primary-blue">
@@ -104,7 +201,6 @@ export default async function MessagesPage() {
           </div>
         </div>
       </Container>
-      <CountryDropdown className="hidden lg:inline-grid lg:col-span-2" />
     </>
   );
 }

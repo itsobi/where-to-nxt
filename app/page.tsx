@@ -1,11 +1,11 @@
 import { Container } from '@/components/Container';
-import { CountryDropdown } from '@/components/CountryDropdown';
+import { PopularCountryList } from '@/components/PopularCountryList';
 import { NotificationFeed } from '@/components/NotifcationFeed';
 import { Post } from '@/components/Post';
 import { PostForm } from '@/components/PostForm';
 import { getPosts } from '@/lib/queries/getPosts';
 import { SignedIn } from '@clerk/nextjs';
-
+import { currentUser } from '@clerk/nextjs/server';
 export default async function HomePage() {
   const posts = await getPosts();
 
@@ -28,7 +28,7 @@ export default async function HomePage() {
           )}
         </div>
       </Container>
-      <CountryDropdown className="hidden lg:inline-grid lg:col-span-2" />
+      <PopularCountryList className="hidden lg:inline-grid lg:col-span-2" />
     </>
   );
 }

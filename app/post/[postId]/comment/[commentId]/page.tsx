@@ -1,6 +1,6 @@
 import { BackButton } from '@/components/BackButton';
 import { Container } from '@/components/Container';
-import { CountryDropdown } from '@/components/CountryDropdown';
+import { PopularCountryList } from '@/components/PopularCountryList';
 import { DottedSeparator } from '@/components/DottedSeparator';
 import { PostActions } from '@/components/PostActions';
 import { Reply } from '@/components/Reply';
@@ -114,7 +114,7 @@ export default async function MainCommentPage({
           postId={comment.post_id.toString()}
         />
       </Container>
-      <CountryDropdown className="hidden lg:inline-grid lg:col-span-2" />
+      <PopularCountryList className="hidden lg:inline-grid lg:col-span-2" />
     </>
   );
 }

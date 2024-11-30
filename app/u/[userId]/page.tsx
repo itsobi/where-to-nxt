@@ -1,5 +1,5 @@
 import { BackButton } from '@/components/BackButton';
-import { CountryDropdown } from '@/components/CountryDropdown';
+import { PopularCountryList } from '@/components/PopularCountryList';
 import { Post } from '@/components/Post';
 import { getPostsByUserId } from '@/lib/queries/getPost';
 import { auth } from '@clerk/nextjs/server';
@@ -27,7 +27,7 @@ export default async function UserPostPage({ params }: UserPostPageProps) {
           <Post key={post.id} post={post} />
         ))}
       </div>
-      <CountryDropdown className="hidden lg:inline-grid lg:col-span-2" />
+      <PopularCountryList className="hidden lg:inline-grid lg:col-span-2" />
     </>
   );
 }

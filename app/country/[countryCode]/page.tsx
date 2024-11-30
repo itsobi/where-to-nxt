@@ -1,5 +1,5 @@
 import { BackButton } from '@/components/BackButton';
-import { CountryDropdown } from '@/components/CountryDropdown';
+import { PopularCountryList } from '@/components/PopularCountryList';
 import { Post } from '@/components/Post';
 import { getCountry } from '@/lib/countries';
 import { getPostsByCountry } from '@/lib/queries/getPost';
@@ -24,7 +24,7 @@ export default async function CountryPagePosts({
           <Post key={post.id} post={post} />
         ))}
       </div>
-      <CountryDropdown className="hidden lg:block lg:col-span-2" />
+      <PopularCountryList className="hidden lg:block lg:col-span-2" />
     </>
   );
 }
