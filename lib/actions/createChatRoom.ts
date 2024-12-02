@@ -2,7 +2,7 @@
 
 import { supabaseAdmin } from '@/supabase/admin';
 import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
 export const createChatRoom = async (
   memberId1: string,
@@ -24,7 +24,7 @@ export const createChatRoom = async (
     }
 
     if (existingChatroom?.chat_room_id) {
-      console.log('Chatroom already exists');
+      console.log('CHAT ROOM ALREADY EXISTS');
       return {
         success: true,
         chat_room_id: existingChatroom.chat_room_id,
@@ -42,6 +42,7 @@ export const createChatRoom = async (
     if (error) {
       throw new Error(error.message);
     }
+    revalidatePath(`/messages/${chatRoomId}`);
 
     return { success: true, message: 'Chatroom created successfully' };
   } catch (error: any) {

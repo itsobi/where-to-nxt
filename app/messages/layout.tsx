@@ -19,10 +19,10 @@ export default async function MessageLayout({ children }: MessagesLayoutProps) {
   return (
     <div className="col-span-full h-full">
       <div className="flex h-full space-x-2">
-        <div className="hidden lg:inline-flex bg-red-100">
+        <div className="hidden lg:inline-flex flex-col border-r">
           <MessagesSidebar chatRooms={chatRooms} />
         </div>
-        <div className="flex-1 bg-blue-100">{children}</div>
+        <div className="flex-1">{children}</div>
       </div>
     </div>
   );

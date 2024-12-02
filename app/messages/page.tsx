@@ -4,9 +4,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { getChatRooms } from '@/lib/queries/getChatRooms';
 import { auth } from '@clerk/nextjs/server';
-import { Check } from 'lucide-react';
+import { Check, MailPlus } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import { getProUsers } from '@/lib/queries/getProUser';
+import {
+  getProUsers,
+  getProUsersEligibleForConversation,
+} from '@/lib/queries/getProUser';
 import {
   Dialog,
   DialogContent,
@@ -16,6 +19,8 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Conversation } from './_components/Conversation';
+import { MessagesHeader } from './_components/MessagesHeader';
+import { NewChatRoomDialog } from './_components/NewChatRoomDialog';
 
 const features = [
   {
@@ -35,7 +40,6 @@ const features = [
 const isPro = true;
 
 export default async function MessagesPage() {
-  // const user = await currentUser();
   const { userId } = auth();
 
   if (!userId) {
@@ -44,6 +48,7 @@ export default async function MessagesPage() {
 
   const chatRooms = await getChatRooms(userId);
   const proUsers = await getProUsers(userId);
+  const availableProUsers = await getProUsersEligibleForConversation(userId);
 
   if (isPro) {
     if (!userId) {
@@ -63,7 +68,7 @@ export default async function MessagesPage() {
                 Start a conversation
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="max-w-[450px]">
               <DialogHeader>
                 <DialogTitle>New Message</DialogTitle>
               </DialogHeader>
@@ -96,53 +101,30 @@ export default async function MessagesPage() {
 
     return (
       <>
-        {/* large screen */}
+        {/* small screen */}
+        <div className="lg:hidden ">
+          <div>
+            <MessagesHeader availableProUsers={availableProUsers} />
+          </div>
+          {chatRooms.map((chatRoom) => (
+            <Conversation key={chatRoom.id} chatRoom={chatRoom} />
+          ))}
+        </div>
 
+        {/* large screen */}
         <div className="hidden lg:flex flex-col justify-center items-center h-full w-full text-center">
           <h1 className="text-2xl font-semibold">Select a conversation</h1>
           <p className="text-muted-foreground">
             Continue a conversation or start a new one with a Pro user!
           </p>
-          <Dialog>
-            <DialogTrigger asChild>
+          <NewChatRoomDialog
+            TriggerComponent={
               <Button className="mt-4 font-semibold">
                 Start a conversation
               </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>New Message</DialogTitle>
-              </DialogHeader>
-              <ScrollArea className="h-[300px] pr-4">
-                {proUsers.map((user) => (
-                  <div
-                    key={user.id}
-                    className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent cursor-pointer"
-                  >
-                    <Avatar>
-                      <AvatarImage
-                        src={user.profile_image}
-                        alt={user.username}
-                      />
-                      <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium leading-none">
-                        {user.username}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </ScrollArea>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        {/* small screen */}
-        <div className="lg:hidden">
-          {chatRooms.map((chatRoom) => (
-            <Conversation key={chatRoom.id} chatRoom={chatRoom} />
-          ))}
+            }
+            availableProUsers={availableProUsers}
+          />
         </div>
       </>
     );

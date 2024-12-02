@@ -9,8 +9,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import Link from 'next/link';
-import { auth } from '@clerk/nextjs/server';
 import { useUser } from '@clerk/nextjs';
 import { createChatRoomId } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
