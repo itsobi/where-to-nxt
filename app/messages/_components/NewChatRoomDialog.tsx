@@ -31,7 +31,6 @@ export function NewChatRoomDialog({
   availableProUsers,
 }: NewChatRoomDialogProps) {
   const { userId: currentUserId } = useAuth();
-  if (!currentUserId) return null;
 
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -83,7 +82,7 @@ export function NewChatRoomDialog({
           availableProUsers.map((user) => {
             const chatRoomId = createChatRoomId(
               user.clerk_user_id,
-              currentUserId
+              currentUserId!
             );
             return (
               <ScrollArea className="h-[300px] pr-4">
@@ -97,7 +96,7 @@ export function NewChatRoomDialog({
                   onClick={() => {
                     !isPending &&
                       handleCreateChatRoom(
-                        currentUserId,
+                        currentUserId!,
                         user.clerk_user_id,
                         chatRoomId
                       );

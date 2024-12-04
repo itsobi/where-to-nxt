@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { auth } from '@clerk/nextjs/server';
 import { Check } from 'lucide-react';
 import { redirect } from 'next/navigation';
+import { ChatRoom } from '../_components/ChatRoom';
 
 const features = [
   {
@@ -36,13 +37,13 @@ export default async function ChatRoomPage({ params }: ChatRoomProps) {
     if (!userId) {
       redirect('/');
     }
-    // const chatRooms = await getChatRooms(userId);
+
     return (
       <>
         <div className="lg:hidden">
           <BackButton label="Back" />
         </div>
-        <p>hello</p>
+        <ChatRoom chatRoomId={params.chatId} />
       </>
     );
   }
