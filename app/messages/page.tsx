@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { getChatRooms } from '@/lib/queries/getChatRooms';
 import { auth } from '@clerk/nextjs/server';
-import { Check, MailPlus } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import {
   getProUsers,

@@ -3,47 +3,58 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Message } from '@/lib/queries/getChatRoomMessages';
 import { cn } from '@/lib/utils';
-import {
-  createMessage,
-  getMessages,
-  Message,
-} from '@/supabase/supabaseRequests';
-import { useAuth, useSession, useUser } from '@clerk/nextjs';
-import { createClient } from '@supabase/supabase-js';
-import { useRouter } from 'next/navigation';
+import { supabaseClient } from '@/supabase/client';
+import { createMessage } from '@/supabase/supabaseRequests';
+import { useAuth, useUser } from '@clerk/nextjs';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 interface ChatRoomProps {
   chatRoomId: string;
+  preRenderedMessages: Message[];
 }
 
-export function ChatRoom({ chatRoomId }: ChatRoomProps) {
+const supabase = supabaseClient();
+
+export function ChatRoom({ chatRoomId, preRenderedMessages }: ChatRoomProps) {
   const { getToken } = useAuth();
   const { user } = useUser();
-  const [messages, setMessages] = useState<Message[] | []>([]);
+  const [messages, setMessages] = useState<Message[] | []>(preRenderedMessages);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string>('');
+  const messageEndRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const loadMessages = async () => {
-      const token = await getToken({ template: 'supabase' });
-      const messages = await getMessages({ chatRoomId, supabaseToken: token });
-
-      if (messages.error) setError('There was an error loading the messages');
-      if (messages.data) setMessages(messages.data);
-    };
-    loadMessages();
-
-    // cleanup function
+    const channel = supabase
+      .channel('messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `chat_room_id=eq.${chatRoomId}`,
+        },
+        (payload) => {
+          console.log('Change received!', payload);
+          setMessages((current) => [...current, payload.new as Message]);
+        }
+      )
+      .subscribe();
     return () => {
-      setMessages([]);
+      supabase.removeChannel(channel);
     };
-  }, [getToken, user?.id]);
+  }, [supabase]);
+
+  useEffect(() => {
+    if (messages.length > 10) {
+      messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // Don't proceed if taskName is empty
     if (!message.trim()) return;
 
     setError(null);
@@ -59,27 +70,48 @@ export function ChatRoom({ chatRoomId }: ChatRoomProps) {
       });
 
       if (addMessage.error) {
+        toast.error('There was an error creating the message');
         setError('There was an error creating the task');
         return;
       }
-
-      // Only update state if we have valid data
-      if (addMessage.data?.[0]) {
-        setMessages((current) => [...current, addMessage.data[0]]);
-        setMessage('');
-      }
     } catch (err) {
+      console.log('err', err);
       setError('There was an error creating the task');
+    } finally {
+      setMessage('');
     }
   };
 
   if (error) return <div>Error: {error}</div>;
 
-  if (messages.length === 0) return <div>No messages yet</div>;
+  if (messages?.length === 0) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="h-[90vh] flex items-center justify-center">
+          <div className="text-gray-500">No messages yet</div>
+        </div>
+        <div className="border-t p-4">
+          <form
+            onSubmit={handleSendMessage}
+            className="w-full mx-auto flex space-x-2"
+          >
+            <Input
+              type="text"
+              placeholder="Send a message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="flex-1"
+            />
+            <Button type="submit">Send</Button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">
-      <ScrollArea className="flex-1">
+      <ScrollArea className="h-[90vh] overflow-y-auto">
         <div className="w-full py-4 px-4 space-y-4">
           {messages.map((message) => (
             <div
@@ -109,6 +141,8 @@ export function ChatRoom({ chatRoomId }: ChatRoomProps) {
             </div>
           ))}
         </div>
+
+        <div ref={messageEndRef} />
       </ScrollArea>
       <div className="border-t p-4">
         <form

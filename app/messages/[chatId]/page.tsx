@@ -1,4 +1,3 @@
-import { BackButton } from '@/components/BackButton';
 import { Container } from '@/components/Container';
 import { PopularCountryList } from '@/components/PopularCountryList';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { auth } from '@clerk/nextjs/server';
 import { Check } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { ChatRoom } from '../_components/ChatRoom';
+import { getChatRoomMessages } from '@/lib/queries/getChatRoomMessages';
 
 const features = [
   {
@@ -38,12 +38,11 @@ export default async function ChatRoomPage({ params }: ChatRoomProps) {
       redirect('/');
     }
 
+    const messages = await getChatRoomMessages(params.chatId);
+
     return (
       <>
-        <div className="lg:hidden">
-          <BackButton label="Back" />
-        </div>
-        <ChatRoom chatRoomId={params.chatId} />
+        <ChatRoom chatRoomId={params.chatId} preRenderedMessages={messages} />
       </>
     );
   }

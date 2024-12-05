@@ -5,7 +5,6 @@ import { Post } from '@/components/Post';
 import { PostForm } from '@/components/PostForm';
 import { getPosts } from '@/lib/queries/getPosts';
 import { SignedIn } from '@clerk/nextjs';
-import { currentUser } from '@clerk/nextjs/server';
 export default async function HomePage() {
   const posts = await getPosts();
 
