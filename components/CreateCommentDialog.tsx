@@ -1,5 +1,7 @@
 'use client';
 
+import { useMediaQuery } from '@/lib/hooks';
+
 import {
   Dialog,
   DialogContent,
@@ -11,13 +13,11 @@ import {
 } from '@/components/ui/dialog';
 
 import { PostType } from '@/lib/queries/getPosts';
-import { MessageCircle, ThumbsUp } from 'lucide-react';
-import { useMediaQuery } from '@/lib/useMediaQuery';
+import { MessageCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
-import { User } from '@clerk/nextjs/server';
 import { Button } from './ui/button';
-import { useRef, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { cn } from '@/lib/utils';
 import { createComment } from '@/lib/actions/createComment';
 import { toast } from 'sonner';

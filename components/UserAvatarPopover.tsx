@@ -73,7 +73,7 @@ export function UserAvatarPopover({
             className="flex items-center justify-start gap-2 rounded-none px-4 py-2 hover:bg-gray-100 text-sm hover:text-primary-blue"
           >
             <User className="h-4 w-4" />
-            View posts
+            View profile
           </Button>
           {user.id !== author_clerk_user_id && (
             <Button

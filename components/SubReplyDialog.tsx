@@ -1,5 +1,7 @@
 'use client';
 
+import { useMediaQuery } from '@/lib/hooks';
+
 import {
   Dialog,
   DialogContent,
@@ -11,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 
 import { MessageCircle, ThumbsUp } from 'lucide-react';
-import { useMediaQuery } from '@/lib/useMediaQuery';
+
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from './ui/button';

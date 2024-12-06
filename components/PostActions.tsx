@@ -1,9 +1,10 @@
 'use client';
 
+import { useMediaQuery } from '@/lib/hooks';
+
 import { CommentType } from '@/lib/queries/getPosts';
 import { Trash2 } from 'lucide-react';
 import { CreateReplyDialog } from './CreateReplyDialog';
-import { useMediaQuery } from '@/lib/useMediaQuery';
 import { ThumbsUp } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';

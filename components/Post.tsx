@@ -3,7 +3,6 @@
 import { formatDistanceToNow } from 'date-fns';
 
 import { PostType } from '@/lib/queries/getPosts';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { getCountry } from '@/lib/countries';
 
 import {
@@ -20,10 +19,10 @@ import { Skeleton } from './ui/skeleton';
 
 import Image from 'next/image';
 import { useState, useTransition } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs';
 import { DottedSeparator } from './DottedSeparator';
-import { MessageCircle, ThumbsUp, Trash2 } from 'lucide-react';
-import { useMediaQuery } from '@/lib/useMediaQuery';
+import { ThumbsUp, Trash2 } from 'lucide-react';
+import { useMediaQuery } from '@/lib/hooks';
 import { Button } from './ui/button';
 import { deletePost } from '@/lib/actions/deletePost';
 import { toast } from 'sonner';
@@ -66,7 +65,6 @@ export function Post({ post, linkToPost = false }: PostProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
   const [isPending, startTransition] = useTransition();
-
   const alreadyLiked =
     post.id && post.liked_by.some((like) => like.clerk_user_id === user?.id);
 
@@ -122,6 +120,7 @@ export function Post({ post, linkToPost = false }: PostProps) {
         <div className="w-full">
           <div className="flex items-center gap-2">
             <p className="font-semibold">{post.username}</p>
+
             <p className="hidden lg:block text-sm text-muted-foreground">
               {formatDistanceToNow(new Date(post.created_at), {
                 addSuffix: true,

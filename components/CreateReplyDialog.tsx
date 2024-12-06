@@ -12,7 +12,7 @@ import {
 
 import { CommentType } from '@/lib/queries/getPosts';
 import { MessageCircle } from 'lucide-react';
-import { useMediaQuery } from '@/lib/useMediaQuery';
+import { useMediaQuery } from '@/lib/hooks';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from './ui/button';

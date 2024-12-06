@@ -1,5 +1,3 @@
-'use client';
-
 import { supabaseClientRLS } from './client';
 
 export const createMessage = async ({
@@ -46,8 +44,6 @@ export const createTodo = async ({
 }) => {
   if (!userId || !token)
     return { data: [], error: 'No user ID or supabase token' };
-
-  console.log('right here');
 
   const supabase = await supabaseClientRLS({ token: token });
   const { data, error } = await supabase

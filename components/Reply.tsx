@@ -1,5 +1,7 @@
 'use client';
 
+import { useMediaQuery } from '@/lib/hooks';
+
 import { ReplyType } from '@/lib/queries/getComments';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -8,12 +10,10 @@ import { Skeleton } from './ui/skeleton';
 import { SubReplyDialog } from './SubReplyDialog';
 import { SignedIn, useUser } from '@clerk/nextjs';
 import { ThumbsUp, Trash2 } from 'lucide-react';
-import { useMediaQuery } from '@/lib/useMediaQuery';
+
 import { likeReply } from '@/lib/actions/like-actions';
 import { toast } from 'sonner';
 import { useState, useTransition } from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Button } from './ui/button';
 
 interface ReplyProps {
   reply: ReplyType;

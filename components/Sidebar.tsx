@@ -1,5 +1,7 @@
 'use client';
 
+import { useMediaQuery } from '@/lib/hooks';
+
 import {
   HomeIcon,
   Loader,
@@ -20,7 +22,6 @@ import {
 } from '@clerk/nextjs';
 import Image from 'next/image';
 import { DottedSeparator } from './DottedSeparator';
-import { useMediaQuery } from '@/lib/useMediaQuery';
 
 const sidebarItems = [
   {

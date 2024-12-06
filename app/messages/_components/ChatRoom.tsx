@@ -25,6 +25,7 @@ export function ChatRoom({ chatRoomId, preRenderedMessages }: ChatRoomProps) {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string>('');
   const messageEndRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const channel = supabase
       .channel('messages')
@@ -45,7 +46,7 @@ export function ChatRoom({ chatRoomId, preRenderedMessages }: ChatRoomProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase]);
+  }, [supabase, chatRoomId]);
 
   useEffect(() => {
     if (messages.length > 10) {
