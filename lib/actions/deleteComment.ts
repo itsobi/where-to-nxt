@@ -9,9 +9,11 @@ export const deleteComment = async (
   commentId: number,
   postId: number
 ) => {
-  auth().protect();
+  const { userId } = await auth();
 
-  const { userId } = auth();
+  if (!userId) {
+    throw new Error('Unauthorized');
+  }
 
   if (userId !== authorId) {
     throw new Error('Unauthorized to delete this comment');

@@ -6,6 +6,8 @@ import { Check } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { ChatRoom } from '../_components/ChatRoom';
 import { getChatRoomMessages } from '@/lib/queries/getChatRoomMessages';
+import { CustomAlertDialog } from '@/components/CustomAlertDialog';
+import { getUserById } from '@/lib/queries/getUser';
 
 const features = [
   {
@@ -31,18 +33,42 @@ interface ChatRoomProps {
 }
 
 export default async function ChatRoomPage({ params }: ChatRoomProps) {
-  const { userId } = auth();
+  const { chatId } = await params;
+  const { userId } = await auth();
+
+  const otherUserId = chatId.split('-').find((id) => id !== userId);
+
+  const otherUser = await getUserById(otherUserId);
 
   if (isPro) {
     if (!userId) {
       redirect('/');
     }
 
-    const messages = await getChatRoomMessages(params.chatId);
+    if (!otherUserId) {
+      return (
+        <CustomAlertDialog
+          title="User is not PRO"
+          description="This user is not a PRO user. You will be redirected to the home page."
+          href="/"
+        />
+      );
+    }
+
+    const messages = await getChatRoomMessages(chatId);
+    // transform the messages to have the created_at as a string for the client
+    const transformedMessages = messages.map((msg) => ({
+      ...msg,
+      created_at: new Date(msg.created_at).toISOString(),
+    }));
 
     return (
       <>
-        <ChatRoom chatRoomId={params.chatId} preRenderedMessages={messages} />
+        <ChatRoom
+          chatRoomId={chatId}
+          preRenderedMessages={transformedMessages}
+          recipientUsername={otherUser?.username}
+        />
       </>
     );
   }

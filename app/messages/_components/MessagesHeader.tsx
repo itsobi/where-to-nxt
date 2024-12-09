@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { MailPlus } from 'lucide-react';
-import { User } from '@/lib/queries/getProUser';
+import { UserType } from '@/lib/queries/getProUser';
 import { NewChatRoomDialog } from './NewChatRoomDialog';
 
 interface MessagesHeaderProps {
-  availableProUsers: User[];
+  availableProUsers: UserType[];
 }
 
 export function MessagesHeader({ availableProUsers }: MessagesHeaderProps) {

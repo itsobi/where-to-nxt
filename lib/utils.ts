@@ -9,3 +9,7 @@ export const createChatRoomId = (userId: string, recipientUserId: string) => {
   const sortedIds = [userId, recipientUserId].sort();
   return sortedIds.join('-');
 };
+
+export const convertToSubcurrency = (amount: number, factor = 100) => {
+  return Math.round(amount * factor);
+};

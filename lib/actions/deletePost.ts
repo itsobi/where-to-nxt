@@ -5,8 +5,7 @@ import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 
 export const deletePost = async (postId: number, images?: string[]) => {
-  auth().protect();
-  const { userId } = auth();
+  const { userId } = await auth();
 
   if (!userId) {
     throw new Error('Unauthorized');

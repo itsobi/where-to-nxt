@@ -13,28 +13,21 @@ import '@knocklabs/react/dist/index.css';
 import { useUser } from '@clerk/nextjs';
 
 export const NotificationFeed = () => {
-  if (!process.env.NEXT_PUBLIC_KNOCK_PUBLIC_KEY) {
-    return;
-  }
-
-  if (!process.env.NEXT_PUBLIC_KNOCK_CHANNEL_ID) {
-    return;
-  }
-
   const [isVisible, setIsVisible] = useState(false);
   const notifButtonRef = useRef(null);
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
 
-  if (!user?.id) {
-    return;
+  // Combine all conditions for a single early return
+  if (!isLoaded || !user?.id) {
+    return null; // Return null instead of undefined
   }
 
   return (
     <KnockProvider
-      apiKey={process.env.NEXT_PUBLIC_KNOCK_PUBLIC_KEY}
+      apiKey={process.env.NEXT_PUBLIC_KNOCK_PUBLIC_KEY!}
       userId={user.id}
     >
-      <KnockFeedProvider feedId={process.env.NEXT_PUBLIC_KNOCK_CHANNEL_ID}>
+      <KnockFeedProvider feedId={process.env.NEXT_PUBLIC_KNOCK_CHANNEL_ID!}>
         <>
           <NotificationIconButton
             ref={notifButtonRef}

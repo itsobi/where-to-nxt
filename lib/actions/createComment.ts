@@ -1,10 +1,10 @@
 'use server';
 
 import { supabaseAdmin } from '@/supabase/admin';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
-
 import { Knock } from '@knocklabs/node';
+import { PROJECT_URL } from '../constants';
 
 type createCommentProps = {
   postId: number | undefined;
@@ -12,18 +12,17 @@ type createCommentProps = {
   authorId: string;
 };
 
+const knock = new Knock(process.env.KNOCK_SECRET_KEY);
+
 export const createComment = async ({
   postId,
   comment,
   authorId,
 }: createCommentProps) => {
-  auth().protect();
-
   const user = await currentUser();
-  const knock = new Knock(process.env.KNOCK_SECRET_KEY);
 
-  if (!user?.id) {
-    throw new Error('User not authenticated');
+  if (!user) {
+    throw new Error('Unauthorized');
   }
 
   if (!postId) {
@@ -74,8 +73,8 @@ export const createComment = async ({
       },
       data: {
         sender: user.username,
-        // TODO: CHANGE THIS TO THE ACTUAL URL
-        url: `http://localhost:3000/post/${postId}`,
+
+        url: `${PROJECT_URL}/post/${postId}`,
       },
       recipients: [
         {

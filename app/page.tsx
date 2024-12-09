@@ -4,19 +4,23 @@ import { NotificationFeed } from '@/components/NotifcationFeed';
 import { Post } from '@/components/Post';
 import { PostForm } from '@/components/PostForm';
 import { getPosts } from '@/lib/queries/getPosts';
-import { SignedIn } from '@clerk/nextjs';
+import { isCurrentUserPro } from '@/lib/queries/getProUser';
+import { auth } from '@clerk/nextjs/server';
+
 export default async function HomePage() {
   const posts = await getPosts();
+  const { userId } = await auth();
+  const isProMember = await isCurrentUserPro(userId);
 
   return (
     <>
       <Container className="col-span-full lg:col-span-5">
         <div className="h-full flex flex-col">
-          <div className="flex items-center justify-end pb-2">
-            <SignedIn>
+          {isProMember && (
+            <div className="flex items-center justify-end pb-2">
               <NotificationFeed />
-            </SignedIn>
-          </div>
+            </div>
+          )}
           <PostForm />
           {posts.length ? (
             posts.map((post) => <Post key={post.id} post={post} linkToPost />)

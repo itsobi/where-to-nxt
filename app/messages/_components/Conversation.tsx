@@ -22,10 +22,17 @@ export function Conversation({ chatRoom }: ConversationProps) {
         <div className="flex items-center space-x-2 truncate">
           <p className="font-semibold">{chatRoom.otherUser.username}</p>
           <p className="text-sm text-gray-500">
-            [last message time herefasdfsdf]
+            {chatRoom?.lastMessage?.created_at
+              ? new Date(chatRoom.lastMessage.created_at).toLocaleTimeString(
+                  [],
+                  { hour: '2-digit', minute: '2-digit' }
+                )
+              : ''}
           </p>
         </div>
-        <p className="text-sm text-gray-500">[last message here]</p>
+        <p className="text-sm text-gray-500">
+          {chatRoom?.lastMessage?.message || ''}
+        </p>
       </div>
     </Link>
   );

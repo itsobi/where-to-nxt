@@ -13,10 +13,10 @@ export default async function PostPage({
 }: {
   params: { postId: string };
 }) {
-  const post = await getPost(params.postId);
-  const comments = await getComments(params.postId);
-
-  const { userId } = auth();
+  const { postId } = await params;
+  const { userId } = await auth();
+  const post = await getPost(postId);
+  const comments = await getComments(postId);
 
   if (!post) {
     return (

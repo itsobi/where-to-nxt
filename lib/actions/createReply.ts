@@ -4,6 +4,7 @@ import { supabaseAdmin } from '@/supabase/admin';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { Knock } from '@knocklabs/node';
 import { revalidatePath } from 'next/cache';
+import { PROJECT_URL } from '../constants';
 
 type createReplyProps = {
   commentId: number | undefined;
@@ -13,6 +14,8 @@ type createReplyProps = {
   authorId: string;
 };
 
+const knock = new Knock(process.env.KNOCK_SECRET_KEY);
+
 export const createReply = async ({
   commentId,
   content,
@@ -20,10 +23,7 @@ export const createReply = async ({
   parentReplyId,
   authorId,
 }: createReplyProps) => {
-  auth().protect();
-
   const user = await currentUser();
-  const knock = new Knock(process.env.KNOCK_SECRET_KEY);
 
   if (!user?.id) {
     throw new Error('Unauthorized');
@@ -65,8 +65,7 @@ export const createReply = async ({
     },
     data: {
       sender: user.username,
-      // TODO: CHANGE THIS TO THE ACTUAL URL
-      url: `http://localhost:3000/post/${postId}/comment/${commentId}`,
+      url: `${PROJECT_URL}/post/${postId}/comment/${commentId}`,
     },
     recipients: [
       {

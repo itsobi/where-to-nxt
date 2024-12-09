@@ -14,12 +14,18 @@ import {
 
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from './ui/dialog';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog';
 import { Skeleton } from './ui/skeleton';
 
 import Image from 'next/image';
 import { useState, useTransition } from 'react';
-import { useAuth, useUser } from '@clerk/nextjs';
+import { useAuth } from '@clerk/nextjs';
 import { DottedSeparator } from './DottedSeparator';
 import { ThumbsUp, Trash2 } from 'lucide-react';
 import { useMediaQuery } from '@/lib/hooks';
@@ -56,8 +62,12 @@ interface PostProps {
 }
 
 export function Post({ post, linkToPost = false }: PostProps) {
-  const { user } = useUser();
-  const country = getCountry(post.country);
+  const transformedPost = {
+    ...post,
+    created_at: new Date(post.created_at).toISOString(),
+  };
+  const { userId } = useAuth();
+  const country = getCountry(transformedPost.country);
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
     undefined
   );
@@ -66,7 +76,8 @@ export function Post({ post, linkToPost = false }: PostProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
   const [isPending, startTransition] = useTransition();
   const alreadyLiked =
-    post.id && post.liked_by.some((like) => like.clerk_user_id === user?.id);
+    transformedPost.id &&
+    transformedPost.liked_by.some((like) => like.clerk_user_id === userId);
 
   const handleImageClick = (e: React.MouseEvent, image: string) => {
     e.preventDefault();
@@ -78,7 +89,10 @@ export function Post({ post, linkToPost = false }: PostProps) {
   const handleDeletePost = async () => {
     startTransition(async () => {
       setPopoverOpen(false);
-      const response = await deletePost(post.id, post.images);
+      const response = await deletePost(
+        transformedPost.id,
+        transformedPost.images
+      );
       if (response.success) {
         toast.success('Post deleted successfully!');
       } else {
@@ -89,7 +103,11 @@ export function Post({ post, linkToPost = false }: PostProps) {
 
   const handleLikePost = async () => {
     startTransition(async () => {
-      const response = await likePost(!!alreadyLiked, post.id, user?.id);
+      const response = await likePost(
+        !!alreadyLiked,
+        transformedPost.id,
+        userId
+      );
 
       if (!response.success) {
         toast.error(response.message);
@@ -112,28 +130,27 @@ export function Post({ post, linkToPost = false }: PostProps) {
       <div className="flex gap-2">
         <div className="p-1">
           <UserAvatarPopover
-            author_clerk_user_id={post.author_clerk_user_id}
-            author_username={post.username}
-            author_profile_image={post.author_profile_image}
+            author_clerk_user_id={transformedPost.author_clerk_user_id}
+            author_username={transformedPost.username}
+            author_profile_image={transformedPost.author_profile_image}
           />
         </div>
         <div className="w-full">
           <div className="flex items-center gap-2">
-            <p className="font-semibold">{post.username}</p>
-
+            <p className="font-semibold">{transformedPost.username}</p>
             <p className="hidden lg:block text-sm text-muted-foreground">
-              {formatDistanceToNow(new Date(post.created_at), {
+              {formatDistanceToNow(new Date(transformedPost.created_at), {
                 addSuffix: true,
               })}
             </p>
           </div>
           <p className="text-sm text-muted-foreground lg:hidden mb-1">
-            {formatDistanceToNow(new Date(post.created_at), {
+            {formatDistanceToNow(new Date(transformedPost.created_at), {
               addSuffix: true,
             })}
           </p>
-          {user?.id ? (
-            <p className="text-sm lg:text-base">{post.content}</p>
+          {userId ? (
+            <p className="text-sm lg:text-base">{transformedPost.content}</p>
           ) : (
             <div className="space-y-2">
               <Skeleton className="w-full h-4" />
@@ -142,12 +159,14 @@ export function Post({ post, linkToPost = false }: PostProps) {
             </div>
           )}
 
-          {post.images && (
+          {transformedPost.images && (
             <div
-              className={`grid ${getGridClass(post.images.length)} gap-2 mt-4`}
+              className={`grid ${getGridClass(
+                transformedPost.images.length
+              )} gap-2 mt-4`}
             >
-              {user?.id
-                ? post.images.map((image, index) => (
+              {userId
+                ? transformedPost.images.map((image, index) => (
                     <div key={index} className="flex items-center">
                       <Dialog
                         open={isDialogOpen}
@@ -164,6 +183,9 @@ export function Post({ post, linkToPost = false }: PostProps) {
                           />
                         </DialogTrigger>
                         <DialogContent className="border-none bg-transparent">
+                          <DialogTitle className="sr-only">
+                            Post Image
+                          </DialogTitle>
                           <Image
                             src={selectedImage || ''}
                             alt="Full screen image"
@@ -175,16 +197,18 @@ export function Post({ post, linkToPost = false }: PostProps) {
                       </Dialog>
                     </div>
                   ))
-                : Array.from({ length: post.images.length }).map((_, index) => (
-                    <Skeleton key={index} className="w-full h-40 rounded" />
-                  ))}
+                : Array.from({ length: transformedPost.images.length }).map(
+                    (_, index) => (
+                      <Skeleton key={index} className="w-full h-40 rounded" />
+                    )
+                  )}
             </div>
           )}
 
           <div className="py-2" />
           <DottedSeparator />
 
-          {user?.id && (
+          {userId && (
             <div className="py-2 flex items-center space-x-8 mt-2">
               <div className="flex items-center flex-1 gap-x-4">
                 <button
@@ -199,25 +223,25 @@ export function Post({ post, linkToPost = false }: PostProps) {
                       alreadyLiked && 'text-green-400'
                     )}
                   />
-                  {post.like_count > 0 && (
+                  {transformedPost.like_count > 0 && (
                     <span className="absolute -top-2 -right-2 text-xs text-black">
-                      {post.like_count}
+                      {transformedPost.like_count}
                     </span>
                   )}
                 </button>
 
-                <CreateCommentOnPostDialog post={post} />
+                <CreateCommentOnPostDialog post={transformedPost} />
 
                 {linkToPost && (
                   <Link
-                    href={`/post/${post.id}`}
+                    href={`/post/${transformedPost.id}`}
                     className="hover:underline underline-offset-2"
                   >
                     <span className="text-xs lg:text-sm">Go To Post</span>
                   </Link>
                 )}
               </div>
-              {post.author_clerk_user_id === user?.id && (
+              {transformedPost.author_clerk_user_id === userId && (
                 <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                   <PopoverTrigger>
                     <Trash2

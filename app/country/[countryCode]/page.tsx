@@ -13,8 +13,9 @@ interface CountryPagePostsProps {
 export default async function CountryPagePosts({
   params,
 }: CountryPagePostsProps) {
-  const posts = await getPostsByCountry(params.countryCode);
-  const country = getCountry(params.countryCode);
+  const { countryCode } = await params;
+  const posts = await getPostsByCountry(countryCode);
+  const country = getCountry(countryCode);
 
   return (
     <>

@@ -1,9 +1,13 @@
 'server only';
 
 import { supabaseAdmin } from '@/supabase/admin';
-import { User } from './getProUser';
+import { UserType } from './getProUser';
 
-export const getUserById = async (userId: string) => {
+export const getUserById = async (userId: string | undefined) => {
+  if (!userId) {
+    return null;
+  }
+
   const { data, error } = await supabaseAdmin
     .from('users')
     .select('*')
@@ -15,5 +19,5 @@ export const getUserById = async (userId: string) => {
     return null;
   }
 
-  return data as User;
+  return data as UserType;
 };

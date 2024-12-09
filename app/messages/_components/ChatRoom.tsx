@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { sendNewMessageNotification } from '@/lib/actions/sendNotification';
 import { Message } from '@/lib/queries/getChatRoomMessages';
 import { cn } from '@/lib/utils';
 import { supabaseClient } from '@/supabase/client';
@@ -14,17 +15,24 @@ import { toast } from 'sonner';
 interface ChatRoomProps {
   chatRoomId: string;
   preRenderedMessages: Message[];
+  recipientUsername: string | undefined;
 }
 
 const supabase = supabaseClient();
 
-export function ChatRoom({ chatRoomId, preRenderedMessages }: ChatRoomProps) {
+export function ChatRoom({
+  chatRoomId,
+  preRenderedMessages,
+  recipientUsername,
+}: ChatRoomProps) {
   const { getToken } = useAuth();
   const { user } = useUser();
   const [messages, setMessages] = useState<Message[] | []>(preRenderedMessages);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string>('');
   const messageEndRef = useRef<HTMLDivElement>(null);
+
+  const recipientUserId = chatRoomId.split('-').find((id) => id !== user?.id);
 
   useEffect(() => {
     const channel = supabase
@@ -38,7 +46,6 @@ export function ChatRoom({ chatRoomId, preRenderedMessages }: ChatRoomProps) {
           filter: `chat_room_id=eq.${chatRoomId}`,
         },
         (payload) => {
-          console.log('Change received!', payload);
           setMessages((current) => [...current, payload.new as Message]);
         }
       )
@@ -68,6 +75,7 @@ export function ChatRoom({ chatRoomId, preRenderedMessages }: ChatRoomProps) {
         chatRoomId,
         message,
         username: user?.username,
+        recipientUserId: recipientUserId,
       });
 
       if (addMessage.error) {
@@ -75,6 +83,13 @@ export function ChatRoom({ chatRoomId, preRenderedMessages }: ChatRoomProps) {
         setError('There was an error creating the task');
         return;
       }
+
+      await sendNewMessageNotification({
+        userId: user?.id,
+        username: user?.username,
+        chatRoomId,
+        recipientUserId,
+      });
     } catch (err) {
       console.log('err', err);
       setError('There was an error creating the task');
@@ -112,6 +127,9 @@ export function ChatRoom({ chatRoomId, preRenderedMessages }: ChatRoomProps) {
 
   return (
     <div className="flex flex-col h-full">
+      <h1 className="text-2xl font-semibold text-primary-blue">
+        {recipientUsername || ''}
+      </h1>
       <ScrollArea className="h-[90vh] overflow-y-auto">
         <div className="w-full py-4 px-4 space-y-4">
           {messages.map((message) => (

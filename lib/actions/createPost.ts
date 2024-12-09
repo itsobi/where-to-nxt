@@ -1,17 +1,16 @@
 'use server';
 
 import { supabaseAdmin } from '@/supabase/admin';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 
 export const createPost = async (
   formData: FormData
 ): Promise<{ success: boolean; message: string }> => {
-  auth().protect();
   const user = await currentUser();
 
   if (!user) {
-    return { success: false, message: 'Not authorized.' };
+    throw new Error('Unauthorized');
   }
 
   const post = formData.get('post')?.toString().trim();

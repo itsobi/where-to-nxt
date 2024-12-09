@@ -14,10 +14,10 @@ export function MessagesSidebar({ chatRooms }: MessageSidebarProps) {
     );
   }
   return (
-    <>
+    <div className="lg:pr-4">
       {chatRooms.map((chatRoom) => (
         <Conversation key={chatRoom.id} chatRoom={chatRoom} />
       ))}
-    </>
+    </div>
   );
 }

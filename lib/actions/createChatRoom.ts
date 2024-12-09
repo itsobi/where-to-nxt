@@ -9,7 +9,11 @@ export const createChatRoom = async (
   memberId2: string,
   chatRoomId: string
 ) => {
-  auth().protect();
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error('Unauthorized');
+  }
 
   try {
     const { data: existingChatroom, error: existingChatroomError } =

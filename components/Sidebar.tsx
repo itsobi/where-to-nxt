@@ -5,8 +5,8 @@ import { useMediaQuery } from '@/lib/hooks';
 import {
   HomeIcon,
   Loader,
+  MessageCircleQuestionIcon,
   MessageSquareIcon,
-  SettingsIcon,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import Link from 'next/link';
@@ -35,9 +35,9 @@ const sidebarItems = [
     href: '/messages',
   },
   {
-    label: 'Settings',
-    icon: <SettingsIcon />,
-    href: '/settings',
+    label: 'Help',
+    icon: <MessageCircleQuestionIcon />,
+    href: '/help',
   },
 ];
 
@@ -45,6 +45,7 @@ export function Sidebar() {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
   const pathname = usePathname();
   const { user } = useUser();
+
   if (!user) {
     return (
       <aside className="h-screen px-4 bg-moon w-16 xl:w-56 pt-2 flex flex-col items-center">

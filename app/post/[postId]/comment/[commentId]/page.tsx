@@ -49,9 +49,10 @@ export default async function MainCommentPage({
 }: {
   params: { commentId: string };
 }) {
-  const { userId } = auth();
-  const comment = await getCommentById(Number(params.commentId));
-  const replies = await getReplies(Number(params.commentId));
+  const { commentId } = await params;
+  const { userId } = await auth();
+  const comment = await getCommentById(Number(commentId));
+  const replies = await getReplies(Number(commentId));
 
   if (!comment) {
     return notFound();

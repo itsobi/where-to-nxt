@@ -7,9 +7,9 @@ import { revalidatePath } from 'next/cache';
 export async function likePost(
   alreadyLiked: boolean,
   postId: number,
-  userId: string | undefined
+  userId: string | null | undefined
 ) {
-  auth().protect();
+  await auth.protect();
 
   if (!userId || !postId) {
     throw new Error('User ID or post ID is missing');
@@ -83,9 +83,9 @@ export const likeComment = async (
   commentId: number,
   postId: string
 ) => {
-  auth().protect();
+  await auth.protect();
 
-  const { userId } = auth();
+  const { userId } = await auth();
 
   if (!commentId || !userId) {
     throw new Error('Comment ID or user ID is missing');
@@ -153,9 +153,9 @@ export const likeReply = async (
   postId: string,
   commentId: string
 ) => {
-  auth().protect();
+  await auth.protect();
 
-  const { userId } = auth();
+  const { userId } = await auth();
 
   if (!replyId || !userId) {
     throw new Error('Reply ID or user ID is missing');

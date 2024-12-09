@@ -1,19 +1,24 @@
-import { supabaseClientRLS } from '@/supabase/client';
-import { useAuth } from '@clerk/nextjs';
+'use client';
+
 import { useState, useEffect } from 'react';
 
-export const useMediaQuery = (query: string): boolean => {
+export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     const media = window.matchMedia(query);
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
-    const listener = () => setMatches(media.matches);
-    window.addEventListener('resize', listener);
-    return () => window.removeEventListener('resize', listener);
-  }, [matches, query]);
+    setMatches(media.matches);
+
+    const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
+    media.addEventListener('change', listener);
+
+    return () => media.removeEventListener('change', listener);
+  }, [query]);
+
+  // Return false during SSR
+  if (!isMounted) return false;
 
   return matches;
-};
+}

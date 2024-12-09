@@ -16,14 +16,14 @@ interface UserPostPageProps {
 }
 
 export default async function UserPostPage({ params }: UserPostPageProps) {
-  const { userId } = auth();
+  const { userId } = await params;
 
   if (!userId) {
     redirect('/');
   }
 
-  const posts = await getPostsByUserId(params.userId);
-  const user = await getUserById(params.userId);
+  const posts = await getPostsByUserId(userId);
+  const user = await getUserById(userId);
 
   return (
     <>
