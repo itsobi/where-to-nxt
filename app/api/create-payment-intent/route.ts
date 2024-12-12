@@ -6,17 +6,13 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(request: Request) {
   await auth.protect();
-
-  // TODO: update to actually get the user's email address
+  const user = await currentUser();
 
   try {
-    // const user = await currentUser();
-
     const paymentIntent = await stripe.paymentIntents.create({
       amount: convertToSubcurrency(PRO_MEMBERSHIP_PRICE),
       currency: 'usd',
-      receipt_email: 'dummy@test.com',
-      // receipt_email: user?.primaryEmailAddress?.emailAddress,
+      receipt_email: user?.primaryEmailAddress?.emailAddress,
       automatic_payment_methods: {
         enabled: true,
       },

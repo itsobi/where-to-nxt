@@ -42,5 +42,5 @@ export const deleteComment = async (
   revalidatePath(`/post/${postId}`);
   revalidatePath('/');
 
-  return { success: true };
+  return { success: true, message: 'Comment deleted successfully!' };
 };

@@ -19,11 +19,11 @@ import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { createChatRoomId } from '@/lib/utils';
-import { User } from '@/lib/queries/getProUser';
+import { UserType } from '@/lib/queries/getProUser';
 
 interface NewChatRoomDialogProps {
   TriggerComponent: React.ReactNode;
-  availableProUsers: User[];
+  availableProUsers: UserType[];
 }
 
 export function NewChatRoomDialog({

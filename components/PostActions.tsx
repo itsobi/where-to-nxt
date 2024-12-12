@@ -37,7 +37,7 @@ export function PostActions({ comment, userId }: PostActionsProps) {
         comment.post_id
       );
       if (response.success) {
-        toast.success('Comment deleted successfully!');
+        toast.success(response.message);
       } else {
         toast.error(response.message);
       }
