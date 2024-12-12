@@ -2,6 +2,7 @@
 
 import { Knock } from '@knocklabs/node';
 import { revalidatePath } from 'next/cache';
+import { PROJECT_URL } from '../constants';
 
 if (!process.env.KNOCK_SECRET_KEY) {
   throw new Error('KNOCK_SECRET_KEY is not set');
@@ -28,7 +29,7 @@ export const sendNewMessageNotification = async ({
       },
       data: {
         sender: username,
-        link: `http://localhost:3000/messages/${chatRoomId}`,
+        link: `${PROJECT_URL}/messages/${chatRoomId}`,
       },
       recipients: [{ id: recipientUserId }],
     });

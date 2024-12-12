@@ -94,7 +94,7 @@ export function Post({ post, linkToPost = false }: PostProps) {
         transformedPost.images
       );
       if (response.success) {
-        toast.success('Post deleted successfully!');
+        toast.success(response.message);
       } else {
         toast.error(response.message);
       }

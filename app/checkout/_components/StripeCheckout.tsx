@@ -4,7 +4,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { useEffect, useState } from 'react';
 import { StripeCheckoutForm } from './StripeCheckoutForm';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
+import { Loader } from 'lucide-react';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
@@ -22,7 +22,6 @@ export function StripeCheckout() {
       .then((res) => res.json())
       .then((data) => {
         setClientSecret(data.clientSecret);
-        setIsLoading(false);
       })
       .finally(() => {
         setIsLoading(false);
@@ -38,9 +37,11 @@ export function StripeCheckout() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col justify-center items-center space-y-4">
-        <p className="text-muted-foreground">Creating your secure checkout</p>
-        <LoadingAnimation />
+      <div className="flex flex-col justify-center items-center space-y-2">
+        <p className="text-muted-foreground">
+          Creating your secure checkout...
+        </p>
+        <Loader className="animate-spin" />
       </div>
     );
   } else {

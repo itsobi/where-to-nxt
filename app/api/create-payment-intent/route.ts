@@ -1,12 +1,13 @@
-import { PRO_MEMBERSHIP_PRICE, PROJECT_URL } from '@/lib/constants';
+import { PRO_MEMBERSHIP_PRICE } from '@/lib/constants';
 import { convertToSubcurrency } from '@/lib/utils';
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(request: Request) {
   await auth.protect();
+
+  // TODO: update to actually get the user's email address
 
   try {
     // const user = await currentUser();

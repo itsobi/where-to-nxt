@@ -48,11 +48,11 @@ export function Sidebar() {
 
   if (!user) {
     return (
-      <aside className="h-screen px-4 bg-moon w-16 xl:w-56 pt-2 flex flex-col items-center">
+      <aside className="h-screen px-4 bg-moon w-16 xl:w-56 pt-2 flex flex-col items-center relative">
         <div className="flex items-center gap-x-2 py-2 text-primary-blue">
-          <Image src="/logo.svg" alt="Where To NXT?" width={40} height={100} />
+          <Image src="/logo.svg" alt="Where to NXT?" width={40} height={100} />
           <h4 className="hidden xl:flex text-lg font-semibold">
-            Where To NXT?
+            Where to NXT?
           </h4>
         </div>
         <DottedSeparator />
@@ -67,7 +67,7 @@ export function Sidebar() {
           </SignInButton>
         </ClerkLoaded>
 
-        <footer className="py-4 hidden xl:block text-xs text-muted-foreground absolute bottom-0">
+        <footer className="py-4 hidden xl:block text-xs text-muted-foreground text-center space-y-2 absolute bottom-0">
           <p>
             brought to you by:{' '}
             <a
@@ -79,6 +79,7 @@ export function Sidebar() {
               justobii.com
             </a>
           </p>
+          <p className="text-xs text-muted-foreground">© 2025 wheretonxt.com</p>
         </footer>
       </aside>
     );
@@ -90,9 +91,9 @@ export function Sidebar() {
         )}
       >
         <div className="flex items-center gap-x-2 py-2 text-primary-blue">
-          <Image src="/logo.svg" alt="Where To NXT?" width={40} height={100} />
+          <Image src="/logo.svg" alt="Where to NXT?" width={40} height={100} />
           <h4 className="hidden xl:flex text-lg font-semibold">
-            Where To NXT?
+            Where to NXT?
           </h4>
         </div>
         <DottedSeparator />
@@ -138,7 +139,7 @@ export function Sidebar() {
           </div>
         </div>
 
-        <footer className="py-4 hidden xl:block text-xs text-muted-foreground absolute bottom-0">
+        <footer className="py-4 hidden xl:block text-xs text-muted-foreground text-center space-y-2 absolute bottom-0">
           <p>
             brought to you by:{' '}
             <a
@@ -150,6 +151,7 @@ export function Sidebar() {
               justobii.com
             </a>
           </p>
+          <p className="text-xs text-muted-foreground">© 2025 wheretonxt.com</p>
         </footer>
       </aside>
     );

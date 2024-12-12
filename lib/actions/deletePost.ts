@@ -45,7 +45,7 @@ export const deletePost = async (postId: number, images?: string[]) => {
       throw new Error('Failed to delete post');
     }
     revalidatePath('/');
-    return { success: true };
+    return { success: true, message: 'Post deleted successfully!' };
   } catch (error) {
     console.error('Error deleting post:', error);
     return {

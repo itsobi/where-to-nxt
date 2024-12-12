@@ -2,6 +2,10 @@ import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { WebhookEvent } from '@clerk/nextjs/server';
 import { supabaseAdmin } from '@/supabase/admin';
+import { Resend } from 'resend';
+import { WelcomeEmailTemplate } from '@/components/EmailTemplate';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
@@ -51,8 +55,35 @@ export async function POST(req: Request) {
   // Do something with the payload
   const { id } = evt.data;
 
-  if (evt.type === 'user.created' || evt.type === 'user.updated') {
-    const { data, error } = await supabaseAdmin.from('users').upsert(
+  if (evt.type === 'user.created') {
+    const { error: userCreateError } = await supabaseAdmin
+      .from('users')
+      .insert({
+        clerk_user_id: id,
+        username: evt.data.username,
+        profile_image: evt.data.image_url,
+      });
+
+    if (userCreateError) {
+      console.error('Error upserting user into supabase:', userCreateError);
+      return new Response('Error processing webhook', { status: 500 });
+    }
+
+    const { error: welcomeEmailError } = await resend.emails.send({
+      from: 'Where to NXT? <welcome@wheretonxt.com>',
+      to: [evt.data.email_addresses[0].email_address],
+      subject: 'Welcome to Where To NXT!',
+      react: WelcomeEmailTemplate({ username: evt.data.username! }),
+    });
+
+    if (welcomeEmailError) {
+      console.error('Error sending welcome email:', welcomeEmailError);
+      return Response.json({ welcomeEmailError }, { status: 500 });
+    }
+  }
+
+  if (evt.type === 'user.updated') {
+    const { error: userUpdateError } = await supabaseAdmin.from('users').upsert(
       {
         clerk_user_id: id,
         username: evt.data.username,
@@ -63,8 +94,8 @@ export async function POST(req: Request) {
       }
     );
 
-    if (error) {
-      console.error('Error upserting user into supabase:', error);
+    if (userUpdateError) {
+      console.error('Error upserting user into supabase:', userUpdateError);
       return new Response('Error processing webhook', { status: 500 });
     }
   }
