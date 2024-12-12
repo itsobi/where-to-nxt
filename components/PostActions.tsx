@@ -98,7 +98,11 @@ export function PostActions({ comment, userId }: PostActionsProps) {
             </h4>
 
             <div className="flex items-center justify-end gap-2">
-              <Button onClick={() => setPopoverOpen(false)} variant="outline">
+              <Button
+                onClick={() => setPopoverOpen(false)}
+                variant="outline"
+                className="bg-gray-100 hover:bg-gray-200 hover:text-black"
+              >
                 Cancel
               </Button>
               <Button

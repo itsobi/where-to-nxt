@@ -11,7 +11,7 @@ import { Resend } from 'resend';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// TODO: update this on production
+// TODO: update endpoint secret on production
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 
 export async function POST(request: Request) {

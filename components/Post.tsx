@@ -259,6 +259,7 @@ export function Post({ post, linkToPost = false }: PostProps) {
                       <Button
                         onClick={() => setPopoverOpen(false)}
                         variant="outline"
+                        className="bg-gray-100 hover:bg-gray-200 hover:text-black"
                       >
                         Cancel
                       </Button>
