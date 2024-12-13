@@ -4,19 +4,11 @@ import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectItem,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useUser } from '@clerk/nextjs';
 import {
   Form,
   FormControl,
@@ -24,6 +16,7 @@ import {
   FormLabel,
   FormItem,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import { useTransition } from 'react';
 import { sendCSTicket } from '@/lib/actions/sendCSTicket';
@@ -33,7 +26,6 @@ const formSchema = z.object({
   username: z.string(),
   email: z.string(),
   subject: z.string().min(2).max(50),
-  inquiryType: z.string().min(2).max(50),
   message: z.string().min(2).max(500),
 });
 
@@ -50,7 +42,6 @@ export function CSForm({ username, email }: CSFormProps) {
       username: username,
       email: email,
       subject: '',
-      inquiryType: '',
       message: '',
     },
   });
@@ -85,15 +76,18 @@ export function CSForm({ username, email }: CSFormProps) {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel className="text-primary-blue">Username</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="username"
-                      className="text-sm lg:text-base"
+                      className="text-sm lg:text-base text-black"
                       disabled
                     />
                   </FormControl>
+                  <FormDescription className="text-xs">
+                    (Prefilled)
+                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -102,7 +96,7 @@ export function CSForm({ username, email }: CSFormProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-primary-blue">Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -111,6 +105,9 @@ export function CSForm({ username, email }: CSFormProps) {
                       disabled
                     />
                   </FormControl>
+                  <FormDescription className="text-xs">
+                    (Prefilled)
+                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -119,7 +116,7 @@ export function CSForm({ username, email }: CSFormProps) {
               name="subject"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Subject</FormLabel>
+                  <FormLabel className="text-primary-blue">Subject</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -133,45 +130,10 @@ export function CSForm({ username, email }: CSFormProps) {
             />
             <FormField
               control={form.control}
-              name="inquiryType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Inquiry Type</FormLabel>
-                  <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="text-sm lg:text-base">
-                          <SelectValue
-                            placeholder="Select the type of inquiry"
-                            className="text-sm lg:text-base"
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="general">
-                          General Question
-                        </SelectItem>
-                        <SelectItem value="technical">
-                          Technical Support
-                        </SelectItem>
-                        <SelectItem value="billing">Billing</SelectItem>
-                        <SelectItem value="feedback">Feedback</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="message"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Message</FormLabel>
+                  <FormLabel className="text-primary-blue">Message</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Please provide details about your inquiry"

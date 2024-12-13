@@ -62,12 +62,8 @@ interface PostProps {
 }
 
 export function Post({ post, linkToPost = false }: PostProps) {
-  const transformedPost = {
-    ...post,
-    created_at: new Date(post.created_at).toISOString(),
-  };
   const { userId } = useAuth();
-  const country = getCountry(transformedPost.country);
+  const country = getCountry(post.country);
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
     undefined
   );
@@ -76,8 +72,7 @@ export function Post({ post, linkToPost = false }: PostProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
   const [isPending, startTransition] = useTransition();
   const alreadyLiked =
-    transformedPost.id &&
-    transformedPost.liked_by.some((like) => like.clerk_user_id === userId);
+    post.id && post.liked_by.some((like) => like.clerk_user_id === userId);
 
   const handleImageClick = (e: React.MouseEvent, image: string) => {
     e.preventDefault();
@@ -89,10 +84,7 @@ export function Post({ post, linkToPost = false }: PostProps) {
   const handleDeletePost = async () => {
     startTransition(async () => {
       setPopoverOpen(false);
-      const response = await deletePost(
-        transformedPost.id,
-        transformedPost.images
-      );
+      const response = await deletePost(post.id, post.images);
       if (response.success) {
         toast.success(response.message);
       } else {
@@ -103,11 +95,12 @@ export function Post({ post, linkToPost = false }: PostProps) {
 
   const handleLikePost = async () => {
     startTransition(async () => {
-      const response = await likePost(
-        !!alreadyLiked,
-        transformedPost.id,
-        userId
-      );
+      const response = await likePost({
+        alreadyLiked: !!alreadyLiked,
+        postId: post.id,
+        userId: userId,
+        postAuthorId: post.author_clerk_user_id,
+      });
 
       if (!response.success) {
         toast.error(response.message);
@@ -130,27 +123,27 @@ export function Post({ post, linkToPost = false }: PostProps) {
       <div className="flex gap-2">
         <div className="p-1">
           <UserAvatarPopover
-            author_clerk_user_id={transformedPost.author_clerk_user_id}
-            author_username={transformedPost.username}
-            author_profile_image={transformedPost.author_profile_image}
+            author_clerk_user_id={post.author_clerk_user_id}
+            author_username={post.username}
+            author_profile_image={post.author_profile_image}
           />
         </div>
         <div className="w-full">
           <div className="flex items-center gap-2">
-            <p className="font-semibold">{transformedPost.username}</p>
+            <p className="font-semibold">{post.username}</p>
             <p className="hidden lg:block text-sm text-muted-foreground">
-              {formatDistanceToNow(new Date(transformedPost.created_at), {
+              {formatDistanceToNow(new Date(post.created_at), {
                 addSuffix: true,
               })}
             </p>
           </div>
           <p className="text-sm text-muted-foreground lg:hidden mb-1">
-            {formatDistanceToNow(new Date(transformedPost.created_at), {
+            {formatDistanceToNow(new Date(post.created_at), {
               addSuffix: true,
             })}
           </p>
           {userId ? (
-            <p className="text-sm lg:text-base">{transformedPost.content}</p>
+            <p className="text-sm lg:text-base">{post.content}</p>
           ) : (
             <div className="space-y-2">
               <Skeleton className="w-full h-4" />
@@ -159,14 +152,12 @@ export function Post({ post, linkToPost = false }: PostProps) {
             </div>
           )}
 
-          {transformedPost.images && (
+          {post.images && (
             <div
-              className={`grid ${getGridClass(
-                transformedPost.images.length
-              )} gap-2 mt-4`}
+              className={`grid ${getGridClass(post.images.length)} gap-2 mt-4`}
             >
               {userId
-                ? transformedPost.images.map((image, index) => (
+                ? post.images.map((image, index) => (
                     <div key={index} className="flex items-center">
                       <Dialog
                         open={isDialogOpen}
@@ -197,11 +188,9 @@ export function Post({ post, linkToPost = false }: PostProps) {
                       </Dialog>
                     </div>
                   ))
-                : Array.from({ length: transformedPost.images.length }).map(
-                    (_, index) => (
-                      <Skeleton key={index} className="w-full h-40 rounded" />
-                    )
-                  )}
+                : Array.from({ length: post.images.length }).map((_, index) => (
+                    <Skeleton key={index} className="w-full h-40 rounded" />
+                  ))}
             </div>
           )}
 
@@ -223,25 +212,25 @@ export function Post({ post, linkToPost = false }: PostProps) {
                       alreadyLiked && 'text-green-400'
                     )}
                   />
-                  {transformedPost.like_count > 0 && (
+                  {post.liked_by.length > 0 && (
                     <span className="absolute -top-2 -right-2 text-xs text-black">
-                      {transformedPost.like_count}
+                      {post.liked_by.length}
                     </span>
                   )}
                 </button>
 
-                <CreateCommentOnPostDialog post={transformedPost} />
+                <CreateCommentOnPostDialog post={post} />
 
                 {linkToPost && (
                   <Link
-                    href={`/post/${transformedPost.id}`}
+                    href={`/post/${post.id}`}
                     className="hover:underline underline-offset-2"
                   >
                     <span className="text-xs lg:text-sm">Go To Post</span>
                   </Link>
                 )}
               </div>
-              {transformedPost.author_clerk_user_id === userId && (
+              {post.author_clerk_user_id === userId && (
                 <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                   <PopoverTrigger>
                     <Trash2

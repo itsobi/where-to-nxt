@@ -12,10 +12,9 @@ export const sendCSTicket = async (formData: FormData) => {
   const username = formData.get('username')?.toString().trim();
   const email = formData.get('email')?.toString().trim();
   const subject = formData.get('subject')?.toString().trim();
-  const inquiryType = formData.get('inquiryType')?.toString().trim();
   const message = formData.get('message')?.toString().trim();
 
-  if (!username || !email || !subject || !inquiryType || !message) {
+  if (!username || !email || !subject || !message) {
     return { success: false, message: 'All fields are required' };
   }
 
@@ -27,7 +26,6 @@ export const sendCSTicket = async (formData: FormData) => {
       username,
       email,
       subject,
-      inquiryType,
       message,
     }),
   });

@@ -162,7 +162,6 @@ interface InternalCustomerSupportEmailTemplateProps {
   username: string;
   email: string;
   subject: string;
-  inquiryType: string;
   message: string;
 }
 
@@ -170,7 +169,6 @@ export function InternalCustomerSupportEmailTemplate({
   username,
   email,
   subject,
-  inquiryType,
   message,
 }: Readonly<InternalCustomerSupportEmailTemplateProps>) {
   return (
@@ -178,7 +176,6 @@ export function InternalCustomerSupportEmailTemplate({
       <p>Username: {username}</p>
       <p>Email: {email}</p>
       <p>Subject: {subject}</p>
-      <p>Inquiry Type: {inquiryType}</p>
       <p>Message: {message}</p>
     </div>
   );
