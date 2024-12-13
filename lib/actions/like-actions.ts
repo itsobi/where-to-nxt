@@ -1,19 +1,36 @@
 'use server';
 
 import { supabaseAdmin } from '@/supabase/admin';
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
+import { isCurrentUserPro } from '../queries/getProUser';
+import { Knock } from '@knocklabs/node';
+import { PROJECT_URL } from '../constants';
 
-export async function likePost(
-  alreadyLiked: boolean,
-  postId: number,
-  userId: string | null | undefined
-) {
+type LikePostProps = {
+  alreadyLiked: boolean;
+  postId: number;
+  userId: string | null | undefined;
+  postAuthorId: string;
+};
+
+const knock = new Knock(process.env.KNOCK_SECRET_KEY);
+
+export async function likePost({
+  alreadyLiked,
+  postId,
+  userId,
+  postAuthorId,
+}: LikePostProps) {
   await auth.protect();
 
-  if (!userId || !postId) {
-    throw new Error('User ID or post ID is missing');
+  const user = await currentUser();
+
+  if (!user || !postId) {
+    throw new Error('User or post ID is missing');
   }
+
+  const proUser = await isCurrentUserPro(user.id);
 
   console.log(`STARTING LIKE POST for user ${userId} and post ${postId}`);
 
@@ -50,6 +67,28 @@ export async function likePost(
       if (insertError) {
         console.error('Error inserting like:', insertError);
         throw insertError;
+      }
+      // Send notification to PRO user
+      if (proUser) {
+        try {
+          await knock.workflows.trigger('like-post', {
+            actor: {
+              id: user.id,
+            },
+            data: {
+              sender: user.username,
+              url: `${PROJECT_URL}/post/${postId}`,
+            },
+            recipients: [
+              {
+                id: postAuthorId,
+              },
+            ],
+          });
+        } catch (error) {
+          console.log('KNOCK ERROR >>>', error);
+          throw error;
+        }
       }
 
       const { error: incrementError } = await supabaseAdmin.rpc(

@@ -1,10 +1,11 @@
 'use server';
 
 import { supabaseAdmin } from '@/supabase/admin';
-import { currentUser } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { Knock } from '@knocklabs/node';
 import { PROJECT_URL } from '../constants';
+import { isCurrentUserPro } from '../queries/getProUser';
 
 type createCommentProps = {
   postId: number | undefined;
@@ -24,6 +25,8 @@ export const createComment = async ({
   if (!user) {
     throw new Error('Unauthorized');
   }
+
+  const proUser = await isCurrentUserPro(user.id);
 
   if (!postId) {
     throw new Error('Post ID is required');
@@ -67,21 +70,29 @@ export const createComment = async ({
       return { success: false, message: 'Failed to increment comment count' };
     }
 
-    await knock.workflows.trigger('new-comment', {
-      actor: {
-        id: user.id,
-      },
-      data: {
-        sender: user.username,
+    // FOR PRO USERS ONLY
+    if (proUser) {
+      try {
+        await knock.workflows.trigger('new-comment', {
+          actor: {
+            id: user.id,
+          },
+          data: {
+            sender: user.username,
 
-        url: `${PROJECT_URL}/post/${postId}`,
-      },
-      recipients: [
-        {
-          id: authorId,
-        },
-      ],
-    });
+            url: `${PROJECT_URL}/post/${postId}`,
+          },
+          recipients: [
+            {
+              id: authorId,
+            },
+          ],
+        });
+      } catch (error) {
+        console.log('KNOCK ERROR >>>', error);
+        throw error;
+      }
+    }
 
     revalidatePath('/');
     revalidatePath(`/post/${postId}`);

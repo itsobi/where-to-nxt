@@ -1,10 +1,11 @@
 'use server';
 
 import { supabaseAdmin } from '@/supabase/admin';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { Knock } from '@knocklabs/node';
 import { revalidatePath } from 'next/cache';
 import { PROJECT_URL } from '../constants';
+import { isCurrentUserPro } from '../queries/getProUser';
 
 type createReplyProps = {
   commentId: number | undefined;
@@ -28,6 +29,8 @@ export const createReply = async ({
   if (!user?.id) {
     throw new Error('Unauthorized');
   }
+
+  const proUser = await isCurrentUserPro(user.id);
 
   const { error } = await supabaseAdmin.from('replies').insert({
     comment_id: commentId,
@@ -59,20 +62,28 @@ export const createReply = async ({
     }
   }
 
-  await knock.workflows.trigger('new-reply', {
-    actor: {
-      id: user.id,
-    },
-    data: {
-      sender: user.username,
-      url: `${PROJECT_URL}/post/${postId}/comment/${commentId}`,
-    },
-    recipients: [
-      {
-        id: authorId,
-      },
-    ],
-  });
+  // FOR PRO USERS ONLY
+  if (proUser) {
+    try {
+      await knock.workflows.trigger('new-reply', {
+        actor: {
+          id: user.id,
+        },
+        data: {
+          sender: user.username,
+          url: `${PROJECT_URL}/post/${postId}/comment/${commentId}`,
+        },
+        recipients: [
+          {
+            id: authorId,
+          },
+        ],
+      });
+    } catch (error) {
+      console.log('KNOCK ERROR >>>', error);
+      throw error;
+    }
+  }
 
   revalidatePath('/');
   revalidatePath(`/post/${postId}`);
