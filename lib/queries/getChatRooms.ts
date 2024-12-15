@@ -42,7 +42,7 @@ export const getChatRooms = async (userId: string) => {
     throw new Error(error.message);
   }
 
-  let enrichedChatRooms: any[] = [];
+  const enrichedChatRooms: ChatRoom[] = [];
   for (const room of chatRooms) {
     const lastMessage = room.messages?.[0] || null;
 

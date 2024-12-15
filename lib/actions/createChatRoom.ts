@@ -51,6 +51,9 @@ export const createChatRoom = async (
     return { success: true, message: 'Chatroom created successfully' };
   } catch (error) {
     console.log(error);
-    return { success: false, message: error };
+    return {
+      success: false,
+      message: 'There was an error creating the chatroom',
+    };
   }
 };

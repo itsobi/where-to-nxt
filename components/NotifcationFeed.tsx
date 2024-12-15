@@ -31,7 +31,7 @@ export const NotificationFeed = () => {
         <>
           <NotificationIconButton
             ref={notifButtonRef}
-            onClick={(e) => setIsVisible(!isVisible)}
+            onClick={() => setIsVisible(!isVisible)}
           />
           <NotificationFeedPopover
             buttonRef={notifButtonRef}

@@ -89,7 +89,7 @@ export function PostActions({ comment, userId }: PostActionsProps) {
             <Trash2
               className="text-red-500"
               size={isLargeScreen ? 18 : 16}
-              onClick={(e) => setPopoverOpen(true)}
+              onClick={() => setPopoverOpen(true)}
             />
           </PopoverTrigger>
           <PopoverContent>

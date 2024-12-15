@@ -55,7 +55,7 @@ export function NewChatRoomDialog({
           userId,
           chatRoomId
         );
-        toast.success(response.message);
+        toast.success(response.message as string);
         router.push(`/messages/${chatRoomId}`);
       } catch (error) {
         toast.error('Something went wrong');
@@ -94,12 +94,13 @@ export function NewChatRoomDialog({
                     isPending && 'opacity-50 cursor-not-allowed'
                   )}
                   onClick={() => {
-                    !isPending &&
+                    if (!isPending) {
                       handleCreateChatRoom(
                         currentUserId!,
                         user.clerk_user_id,
                         chatRoomId
                       );
+                    }
                   }}
                 >
                   <Avatar>

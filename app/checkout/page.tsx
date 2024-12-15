@@ -21,7 +21,7 @@ export default async function CheckoutPage({
     if (!session || session.payment_status !== 'paid') {
       redirect('/messages');
     }
-  } catch (error) {
+  } catch {
     redirect('/messages');
   }
 
