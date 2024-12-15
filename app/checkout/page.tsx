@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
 import { CheckoutAlertDialog } from './_components/CheckoutAlertDialog';
+import Stripe from 'stripe';
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export default async function CheckoutPage({
   searchParams,

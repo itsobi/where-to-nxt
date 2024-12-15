@@ -20,6 +20,16 @@ export async function POST(request: Request) {
   const headersList = await headers();
   const sig = headersList.get('stripe-signature');
 
+  const userEmail = user?.emailAddresses[0].emailAddress;
+
+  if (!userEmail)
+    return Response.json({ error: 'No user email' }, { status: 400 });
+
+  const username = user?.username;
+
+  if (!username)
+    return Response.json({ error: 'No username' }, { status: 400 });
+
   if (!sig) return Response.json({ error: 'No signature' }, { status: 400 });
 
   const body = await request.text();
@@ -44,10 +54,10 @@ export async function POST(request: Request) {
 
       const { error } = await resend.emails.send({
         from: 'Where to NXT? <payments@wheretonxt.com>',
-        to: [user?.emailAddresses[0].emailAddress!],
+        to: [userEmail],
         subject: 'Payment Failed',
         react: PaymentFailedEmailTemplate({
-          username: user?.username!,
+          username: username,
           amount: formatCurrency(paymentIntentFailed.amount),
         }),
       });
@@ -77,10 +87,10 @@ export async function POST(request: Request) {
 
       const { error: paymentSucceededEmailError } = await resend.emails.send({
         from: 'Where to NXT? <payments@wheretonxt.com>',
-        to: [user?.emailAddresses[0].emailAddress!],
+        to: [userEmail],
         subject: 'Payment Success',
         react: PaymentSucceededEmailTemplate({
-          username: user?.username!,
+          username: username,
           amount: formatCurrency(paymentIntent.amount),
         }),
       });
