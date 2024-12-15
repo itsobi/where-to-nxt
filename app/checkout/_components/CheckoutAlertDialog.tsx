@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 
 interface CheckoutAlertDialogProps {
   title: string;
@@ -27,17 +26,21 @@ export function CheckoutAlertDialog({
   success,
 }: CheckoutAlertDialogProps) {
   const router = useRouter();
-  const [open, setOpen] = useState(true);
   return (
     <AlertDialog open={true}>
       <AlertDialogContent className="rounded-lg max-w-md">
         <AlertDialogHeader>
           <AlertDialogTitle
-            className={cn(success ? 'text-green-500' : 'text-red-500')}
+            className={cn(
+              'lg:text-2xl',
+              success ? 'text-green-500' : 'text-red-500'
+            )}
           >
             {title}
           </AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
+          <AlertDialogDescription className="lg:text-lg">
+            {description}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogAction onClick={() => router.replace(href)}>
