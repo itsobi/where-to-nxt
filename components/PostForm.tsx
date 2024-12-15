@@ -13,7 +13,7 @@ import {
 } from './ui/select';
 
 import { DottedSeparator } from './DottedSeparator';
-import { Image, RefreshCcw } from 'lucide-react';
+import { ImageIcon, RefreshCcw } from 'lucide-react';
 import { Button } from './ui/button';
 import { useUser } from '@clerk/nextjs';
 import { groupedCountries } from '@/lib/countries';
@@ -194,7 +194,7 @@ export function PostForm() {
               </div>
 
               <Hint description="Add image" side="top" disabled={!user}>
-                <Image
+                <ImageIcon
                   className={cn(
                     'text-muted-foreground cursor-pointer hover:text-primary-blue',
                     !user && 'cursor-not-allowed hover:text-muted-foreground'

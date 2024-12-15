@@ -5,7 +5,6 @@ import { useMediaQuery } from '@/lib/hooks';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,

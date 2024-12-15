@@ -79,13 +79,13 @@ export function NewChatRoomDialog({
         </DialogHeader>
 
         {availableProUsers.length > 0 ? (
-          availableProUsers.map((user) => {
-            const chatRoomId = createChatRoomId(
-              user.clerk_user_id,
-              currentUserId!
-            );
-            return (
-              <ScrollArea className="h-[300px] pr-4">
+          <ScrollArea className="h-[300px] pr-4">
+            {availableProUsers.map((user) => {
+              const chatRoomId = createChatRoomId(
+                user.clerk_user_id,
+                currentUserId!
+              );
+              return (
                 <div
                   role="button"
                   key={user.id}
@@ -112,9 +112,9 @@ export function NewChatRoomDialog({
                     </p>
                   </div>
                 </div>
-              </ScrollArea>
-            );
-          })
+              );
+            })}
+          </ScrollArea>
         ) : (
           <div>
             <p className="text-sm text-black text-center py-4">

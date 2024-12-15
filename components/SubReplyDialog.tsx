@@ -5,14 +5,13 @@ import { useMediaQuery } from '@/lib/hooks';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-import { MessageCircle, ThumbsUp } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { formatDistanceToNow } from 'date-fns';

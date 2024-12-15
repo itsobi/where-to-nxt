@@ -2,10 +2,8 @@ import { BackButton } from '@/components/BackButton';
 import { PopularCountryList } from '@/components/PopularCountryList';
 import { Post } from '@/components/Post';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { getPostsByUserId } from '@/lib/queries/getPost';
 import { getUserById } from '@/lib/queries/getUser';
-import { auth } from '@clerk/nextjs/server';
 import { CalendarIcon } from 'lucide-react';
 import { redirect } from 'next/navigation';
 

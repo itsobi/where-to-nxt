@@ -14,13 +14,7 @@ import {
 
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from './ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Skeleton } from './ui/skeleton';
 
 import Image from 'next/image';

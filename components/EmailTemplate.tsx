@@ -9,7 +9,7 @@ export function WelcomeEmailTemplate({
 }: Readonly<WelcomeEmailTemplateProps>) {
   return (
     <div>
-      <h2>Hello {username}! We're glad to have you onboard.</h2>
+      <h2>Hello {username}! We&apos;re glad to have you onboard.</h2>
       <h3>
         If you ever need help, please reach out to us{' '}
         <a

@@ -53,7 +53,7 @@ export function ChatRoom({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, chatRoomId]);
+  }, [chatRoomId]);
 
   useEffect(() => {
     if (messages.length > 10) {

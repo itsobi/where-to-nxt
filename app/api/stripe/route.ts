@@ -92,7 +92,7 @@ export async function POST(request: Request) {
       const { error: personEmailError } = await resend.emails.send({
         from: 'Where to NXT? <payments@wheretonxt.com>',
         to: ['obi.j.obialo@gamil.com'],
-        subject: 'Update users posts',
+        subject: 'Update all of the new users posts',
         html: `<p>New PRO member! Update user: ${user?.id} posts to PRO</p>`,
       });
 

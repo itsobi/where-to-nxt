@@ -1,7 +1,7 @@
 'use server';
 
 import { supabaseAdmin } from '@/supabase/admin';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { Knock } from '@knocklabs/node';
 import { PROJECT_URL } from '../constants';
@@ -43,7 +43,7 @@ export const createComment = async ({
   }
 
   try {
-    const { data, error } = await supabaseAdmin
+    const { error } = await supabaseAdmin
       .from('comments')
       .insert({
         post_id: postId,

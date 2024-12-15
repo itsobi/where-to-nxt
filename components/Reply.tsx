@@ -8,8 +8,8 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
 import { Skeleton } from './ui/skeleton';
 import { SubReplyDialog } from './SubReplyDialog';
-import { SignedIn, useUser } from '@clerk/nextjs';
-import { ThumbsUp, Trash2 } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
+import { ThumbsUp } from 'lucide-react';
 
 import { likeReply } from '@/lib/actions/like-actions';
 import { toast } from 'sonner';
@@ -23,7 +23,6 @@ interface ReplyProps {
 
 export function Reply({ reply, postId, userId }: ReplyProps) {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
-  const [popoverOpen, setPopoverOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { user } = useUser();
 

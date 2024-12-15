@@ -21,7 +21,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Conversation } from './_components/Conversation';
 import { MessagesHeader } from './_components/MessagesHeader';
 import { NewChatRoomDialog } from './_components/NewChatRoomDialog';
-import Link from 'next/link';
 
 const features = [
   {
@@ -128,63 +127,61 @@ export default async function MessagesPage() {
   }
 
   return (
-    <>
-      <Container className="col-span-full">
-        <div className="flex flex-col justify-center items-center">
-          <div className="text-center space-y-2 mb-16">
-            <h1 className="text-xl lg:text-2xl font-semibold text-primary-blue">
-              Ooops, it looks like you are not subscribed to PRO!
-            </h1>
-            <p className="text-sm lg:text-base text-muted-foreground">
-              Subscribe to PRO to unlock direct messaging and start connecting
-              with people from all over the world!
+    <Container className="col-span-full">
+      <div className="flex flex-col justify-center items-center">
+        <div className="text-center space-y-2 mb-16">
+          <h1 className="text-xl lg:text-2xl font-semibold text-primary-blue">
+            Ooops, it looks like you are not subscribed to PRO!
+          </h1>
+          <p className="text-sm lg:text-base text-muted-foreground">
+            Subscribe to PRO to unlock direct messaging and start connecting
+            with people from all over the world!
+          </p>
+        </div>
+
+        {/* Pro Card */}
+        <div className="border p-4 rounded-lg shadow-md max-w-[400px]">
+          <div className="mb-8">
+            <div className="border rounded-lg bg-primary-blue px-4 w-fit mb-4">
+              <p className="text-white font-semibold">PRO</p>
+            </div>
+
+            <p className="text-muted-foreground text-sm lg:text-base">
+              Unlock direct messaging/notifications and start connecting with
+              people from all over the world!
             </p>
           </div>
 
-          {/* Pro Card */}
-          <div className="border p-4 rounded-lg shadow-md max-w-[400px]">
-            <div className="mb-8">
-              <div className="border rounded-lg bg-primary-blue px-4 w-fit mb-4">
-                <p className="text-white font-semibold">PRO</p>
-              </div>
+          <h2 className="text-primary-blue text-4xl font-thin">
+            $4.99
+            <span className="text-sm font-semibold text-green-400 ml-1">
+              one-time fee
+            </span>
+          </h2>
 
-              <p className="text-muted-foreground text-sm lg:text-base">
-                Unlock direct messaging/notifications and start connecting with
-                people from all over the world!
-              </p>
-            </div>
+          <hr className="my-4" />
 
-            <h2 className="text-primary-blue text-4xl font-thin">
-              $4.99
-              <span className="text-sm font-semibold text-green-400 ml-1">
-                one-time fee
-              </span>
-            </h2>
+          {/* Features */}
+          <ul className="space-y-2">
+            {features.map((feature) => (
+              <li
+                key={feature.description}
+                className="text-muted-foreground text-sm lg:text-base flex items-center gap-2"
+              >
+                <Check className="text-primary-blue" /> {feature.description}
+              </li>
+            ))}
+          </ul>
 
-            <hr className="my-4" />
+          <hr className="my-4" />
 
-            {/* Features */}
-            <ul className="space-y-2">
-              {features.map((feature) => (
-                <li
-                  key={feature.description}
-                  className="text-muted-foreground text-sm lg:text-base flex items-center gap-2"
-                >
-                  <Check className="text-primary-blue" /> {feature.description}
-                </li>
-              ))}
-            </ul>
-
-            <hr className="my-4" />
-
-            <form action="/api/checkout-sessions" method="POST">
-              <Button type="submit" className="w-full font-semibold">
-                Subscribe
-              </Button>
-            </form>
-          </div>
+          <form action="/api/checkout-sessions" method="POST">
+            <Button type="submit" className="w-full font-semibold">
+              Subscribe
+            </Button>
+          </form>
         </div>
-      </Container>
-    </>
+      </div>
+    </Container>
   );
 }
