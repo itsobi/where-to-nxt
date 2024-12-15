@@ -2,6 +2,7 @@
 
 import { supabaseAdmin } from '@/supabase/admin';
 import { PostType } from './getPosts';
+import { redirect } from 'next/navigation';
 
 export const getPost = async (postId: string) => {
   const { data: post, error } = await supabaseAdmin
@@ -12,6 +13,10 @@ export const getPost = async (postId: string) => {
     )
     .eq('id', postId)
     .single();
+
+  if (!post) {
+    redirect('/');
+  }
 
   if (error) {
     console.error('Error fetching post:', error);

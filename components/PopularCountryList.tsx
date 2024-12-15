@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Skeleton } from './ui/skeleton';
 
 export async function PopularCountryList({ className }: { className: string }) {
-  const data = await getCountryCounts(1);
+  const data = await getCountryCounts(2);
   const countries = getCountries(data ?? []);
 
   return (

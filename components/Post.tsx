@@ -203,7 +203,7 @@ export function Post({ post, linkToPost = false }: PostProps) {
                 <button
                   disabled={isPending}
                   onClick={handleLikePost}
-                  className="hover:text-white relative"
+                  className="hover:text-white relative disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ThumbsUp
                     size={isLargeScreen ? 18 : 16}

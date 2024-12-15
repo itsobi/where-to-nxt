@@ -48,8 +48,12 @@ export type CountryResult = {
   flag: string;
   code: string;
 };
+
 export const getCountries = (countryCodes: CountryCode[]): CountryResult[] => {
-  return countryCodes
-    .map((code) => getCountry(code.country))
+  // Create a Set of unique country codes first
+  const uniqueCodes = [...new Set(countryCodes.map((code) => code.country))];
+
+  return uniqueCodes
+    .map((code) => getCountry(code))
     .filter((country): country is CountryResult => country !== null);
 };

@@ -41,7 +41,7 @@ export default async function UserPostPage({ params }: UserPostPageProps) {
           <div className="mb-4 flex items-center gap-2">
             <h1 className="text-xl font-semibold">{user?.username}</h1>
             {user?.is_pro && (
-              <span className="text-xs text-primary-blue">PRO</span>
+              <span className="text-xs text-primary-blue font-bold">PRO</span>
             )}
           </div>
 

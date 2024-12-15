@@ -48,15 +48,6 @@ export async function likePost({
         throw deleteError;
       }
 
-      const { error: decrementError } = await supabaseAdmin.rpc(
-        'decrement_likes',
-        { post_id: postId }
-      );
-      if (decrementError) {
-        console.error('Error decrementing likes:', decrementError);
-        throw decrementError;
-      }
-
       console.log('Post unliked successfully');
     } else {
       // Like the post
@@ -89,15 +80,6 @@ export async function likePost({
           console.log('KNOCK ERROR >>>', error);
           throw error;
         }
-      }
-
-      const { error: incrementError } = await supabaseAdmin.rpc(
-        'increment_likes',
-        { post_id: postId }
-      );
-      if (incrementError) {
-        console.error('Error incrementing likes:', incrementError);
-        throw incrementError;
       }
 
       console.log('Post liked successfully');

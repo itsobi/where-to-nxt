@@ -78,10 +78,10 @@ export default async function ChatRoomPage({ params }: ChatRoomProps) {
         <div className="flex flex-col justify-center items-center">
           <div className="text-center space-y-2 mb-16">
             <h1 className="text-xl lg:text-2xl font-semibold text-primary-blue">
-              Ooops, it looks like you are not subscribed to Pro!
+              Ooops, it looks like you are not subscribed to PRO!
             </h1>
             <p className="text-sm lg:text-base text-muted-foreground">
-              Subscribe to Pro to unlock direct messaging and start connecting
+              Subscribe to PRO to unlock direct messaging and start connecting
               with people from all over the world!
             </p>
           </div>
@@ -94,8 +94,8 @@ export default async function ChatRoomPage({ params }: ChatRoomProps) {
               </div>
 
               <p className="text-muted-foreground text-sm lg:text-base">
-                Subscribe to Pro to unlock direct messaging and start connecting
-                with people from all over the world!
+                Unlock direct messaging/notifications and start connecting with
+                people from all over the world!
               </p>
             </div>
 
