@@ -9,7 +9,7 @@ export default async function CheckoutPage({
 }: {
   searchParams: { success: string; canceled: string; session_id: string };
 }) {
-  const { success, session_id } = await searchParams;
+  const { success, session_id } = searchParams;
 
   if (!session_id) {
     redirect('/messages');
