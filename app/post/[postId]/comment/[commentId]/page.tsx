@@ -47,9 +47,9 @@ function RenderReplies({
 export default async function MainCommentPage({
   params,
 }: {
-  params: { commentId: string };
+  params: Promise<{ commentId: string }>;
 }) {
-  const { commentId } = await params;
+  const commentId = (await params).commentId;
   const { userId } = await auth();
   const comment = await getCommentById(Number(commentId));
   const replies = await getReplies(Number(commentId));

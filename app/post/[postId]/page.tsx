@@ -11,9 +11,9 @@ import { auth } from '@clerk/nextjs/server';
 export default async function PostPage({
   params,
 }: {
-  params: { postId: string };
+  params: Promise<{ postId: string }>;
 }) {
-  const { postId } = await params;
+  const postId = (await params).postId;
   const { userId } = await auth();
   const post = await getPost(postId);
   const comments = await getComments(postId);

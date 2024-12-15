@@ -7,14 +7,12 @@ import { getUserById } from '@/lib/queries/getUser';
 import { CalendarIcon } from 'lucide-react';
 import { redirect } from 'next/navigation';
 
-interface UserPostPageProps {
-  params: {
-    userId: string;
-  };
-}
-
-export default async function UserPostPage({ params }: UserPostPageProps) {
-  const { userId } = await params;
+export default async function UserPostPage({
+  params,
+}: {
+  params: Promise<{ userId: string }>;
+}) {
+  const userId = (await params).userId;
 
   if (!userId) {
     redirect('/');

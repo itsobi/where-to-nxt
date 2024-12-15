@@ -26,14 +26,12 @@ const features = [
 
 const isPro = true;
 
-interface ChatRoomProps {
-  params: {
-    chatId: string;
-  };
-}
-
-export default async function ChatRoomPage({ params }: ChatRoomProps) {
-  const { chatId } = await params;
+export default async function ChatRoomPage({
+  params,
+}: {
+  params: Promise<{ chatId: string }>;
+}) {
+  const chatId = (await params).chatId;
   const { userId } = await auth();
 
   const otherUserId = chatId.split('-').find((id) => id !== userId);
