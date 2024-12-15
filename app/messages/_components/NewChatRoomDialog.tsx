@@ -57,7 +57,7 @@ export function NewChatRoomDialog({
         );
         toast.success(response.message as string);
         router.push(`/messages/${chatRoomId}`);
-      } catch (error) {
+      } catch {
         toast.error('Something went wrong');
         toast.dismiss(toastId);
       } finally {
