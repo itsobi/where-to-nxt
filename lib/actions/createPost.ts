@@ -29,7 +29,7 @@ export const createPost = async (
     for (const [key, value] of Array.from(formData.entries())) {
       if (key.startsWith('image-') && value instanceof Blob) {
         const filename = `${user.id}/${Date.now()}-${value.name}`;
-        const { data, error } = await supabaseAdmin.storage
+        const { error } = await supabaseAdmin.storage
           .from('posts')
           .upload(filename, value);
 

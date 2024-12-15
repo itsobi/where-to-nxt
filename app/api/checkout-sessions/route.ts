@@ -1,7 +1,8 @@
 import { PROJECT_URL } from '@/lib/constants';
 import { auth } from '@clerk/nextjs/server';
+import Stripe from 'stripe';
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: Request) {
   const { userId } = await auth();
@@ -22,6 +23,11 @@ export async function POST(req: Request) {
           userId,
         },
       });
+
+      if (!session.url) {
+        return Response.json({ error: 'No URL' }, { status: 500 });
+      }
+
       // Redirect to the checkout session URL
       return Response.redirect(session.url, 303);
     } catch (error) {

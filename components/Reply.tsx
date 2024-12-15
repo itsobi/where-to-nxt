@@ -13,7 +13,7 @@ import { ThumbsUp } from 'lucide-react';
 
 import { likeReply } from '@/lib/actions/like-actions';
 import { toast } from 'sonner';
-import { useState, useTransition } from 'react';
+import { useTransition } from 'react';
 
 interface ReplyProps {
   reply: ReplyType;

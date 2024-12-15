@@ -56,7 +56,7 @@ export const getCountryCounts = async (minCount: number) => {
 
   // Filter countries that appear at least minCount times
   const filteredCountries = Object.entries(countryCount)
-    .filter(([_, count]) => count >= minCount)
+    .filter(([, count]) => count >= minCount)
     .map(([country]) => country);
 
   const { data: posts, error: postsError } = await supabaseAdmin

@@ -7,17 +7,20 @@ import { supabaseAdmin } from '@/supabase/admin';
 import { currentUser } from '@clerk/nextjs/server';
 import { headers } from 'next/headers';
 import { Resend } from 'resend';
+import Stripe from 'stripe';
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // TODO: update endpoint secret on production
-const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
+const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET!;
 
 export async function POST(request: Request) {
   const user = await currentUser();
   const headersList = await headers();
   const sig = headersList.get('stripe-signature');
+
+  if (!sig) return Response.json({ error: 'No signature' }, { status: 400 });
 
   const body = await request.text();
 
@@ -26,6 +29,7 @@ export async function POST(request: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
   } catch (err) {
+    console.error(err);
     return Response.json({ error: 'Invalid signature' }, { status: 400 });
   }
 

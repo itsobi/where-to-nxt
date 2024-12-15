@@ -49,8 +49,8 @@ export const createChatRoom = async (
     revalidatePath(`/messages/${chatRoomId}`);
 
     return { success: true, message: 'Chatroom created successfully' };
-  } catch (error: any) {
+  } catch (error) {
     console.log(error);
-    return { success: false, message: error.message };
+    return { success: false, message: error };
   }
 };
