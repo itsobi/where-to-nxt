@@ -7,11 +7,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 export default async function CheckoutPage({
   searchParams,
 }: {
-  searchParams: { success: string; canceled: string; session_id: string };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { success, session_id } = searchParams;
+  const { success, session_id } = await searchParams;
 
-  if (!session_id) {
+  if (typeof session_id !== 'string' || !session_id) {
     redirect('/messages');
   }
 
