@@ -63,12 +63,15 @@ export const isCurrentUserPro = async (userId: string | null) => {
   const { data: user, error } = await supabaseAdmin
     .from('users')
     .select('*')
-    .eq('clerk_user_id', userId)
-    .single();
+    .eq('clerk_user_id', userId);
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return user?.is_pro as boolean;
+  if (!user || user.length !== 1) {
+    return false;
+  }
+
+  return user[0].is_pro as boolean;
 };

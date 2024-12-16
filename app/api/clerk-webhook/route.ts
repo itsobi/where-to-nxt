@@ -8,7 +8,10 @@ import { WelcomeEmailTemplate } from '@/components/EmailTemplate';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
-  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+  const WEBHOOK_SECRET =
+    process.env.NODE_ENV === 'development'
+      ? process.env.DEVELOPMENT_CLERK_WEBHOOK_SECRET
+      : process.env.PRODUCTION_CLERK_WEBHOOK_SECRET;
 
   if (!WEBHOOK_SECRET) {
     throw new Error(
@@ -60,6 +63,7 @@ export async function POST(req: Request) {
       .from('users')
       .insert({
         clerk_user_id: id,
+        email: evt.data.email_addresses[0].email_address,
         username: evt.data.username,
         profile_image: evt.data.image_url,
       });
@@ -82,23 +86,23 @@ export async function POST(req: Request) {
     }
   }
 
-  if (evt.type === 'user.updated') {
-    const { error: userUpdateError } = await supabaseAdmin.from('users').upsert(
-      {
-        clerk_user_id: id,
-        username: evt.data.username,
-        profile_image: evt.data.image_url,
-      },
-      {
-        onConflict: 'clerk_user_id',
-      }
-    );
+  // if (evt.type === 'user.updated') {
+  //   const { error: userUpdateError } = await supabaseAdmin.from('users').upsert(
+  //     {
+  //       clerk_user_id: id,
+  //       username: evt.data.username,
+  //       profile_image: evt.data.image_url,
+  //     },
+  //     {
+  //       onConflict: 'clerk_user_id',
+  //     }
+  //   );
 
-    if (userUpdateError) {
-      console.error('Error upserting user into supabase:', userUpdateError);
-      return new Response('Error processing webhook', { status: 500 });
-    }
-  }
+  //   if (userUpdateError) {
+  //     console.error('Error upserting user into supabase:', userUpdateError);
+  //     return new Response('Error processing webhook', { status: 500 });
+  //   }
+  // }
 
   console.log(`CLERK ID: ${id} upserted to supabase`);
 
