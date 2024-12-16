@@ -59,6 +59,7 @@ export async function POST(req: Request) {
   const { id } = evt.data;
 
   if (evt.type === 'user.created') {
+    console.log(evt.data);
     const { error: userCreateError } = await supabaseAdmin
       .from('users')
       .insert({
@@ -103,8 +104,6 @@ export async function POST(req: Request) {
   //     return new Response('Error processing webhook', { status: 500 });
   //   }
   // }
-
-  console.log(`CLERK ID: ${id} upserted to supabase`);
 
   return new Response('Webhook processed successfully', { status: 200 });
 }
