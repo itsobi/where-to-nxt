@@ -59,7 +59,6 @@ export async function POST(req: Request) {
   const { id } = evt.data;
 
   if (evt.type === 'user.created') {
-    console.log(evt.data);
     const { error: userCreateError } = await supabaseAdmin
       .from('users')
       .insert({
