@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import { CheckoutAlertDialog } from './_components/CheckoutAlertDialog';
 import Stripe from 'stripe';
-import { auth } from '@clerk/nextjs/server';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -11,7 +10,6 @@ export default async function CheckoutPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { success, session_id } = await searchParams;
-  const { userId } = await auth();
 
   if (typeof session_id !== 'string' || !session_id) {
     redirect('/messages');

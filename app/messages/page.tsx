@@ -6,7 +6,6 @@ import { auth } from '@clerk/nextjs/server';
 import { Check } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import {
-  getProUsers,
   getProUsersEligibleForConversation,
   isCurrentUserPro,
 } from '@/lib/queries/getProUser';
