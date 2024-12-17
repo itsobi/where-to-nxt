@@ -65,7 +65,7 @@ export default async function ChatRoomPage({
         <ChatRoom
           chatRoomId={chatId}
           preRenderedMessages={transformedMessages}
-          recipientUsername={otherUser?.username}
+          recipientUsername={otherUser?.username || ''}
         />
       </>
     );

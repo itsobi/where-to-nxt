@@ -30,7 +30,7 @@ export const createReply = async ({
     throw new Error('Unauthorized');
   }
 
-  const proUser = await isCurrentUserPro(user.id);
+  const proUser = await isCurrentUserPro();
 
   const { error } = await supabaseAdmin.from('replies').insert({
     comment_id: commentId,

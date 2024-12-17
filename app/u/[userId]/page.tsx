@@ -29,14 +29,19 @@ export default async function UserPostPage({
         <div className="w-full border rounded-lg shadow-sm bg-white dark:bg-gray-900 p-4 mb-4">
           <div className="flex justify-between items-start mb-6">
             <Avatar className="w-24 h-24 border-4 border-white dark:border-gray-900">
-              <AvatarImage src={user?.profile_image} alt={user?.username} />
-              <AvatarFallback>{user?.username[0].toUpperCase()}</AvatarFallback>
+              <AvatarImage
+                src={user?.imageUrl || ''}
+                alt={user?.username || ''}
+              />
+              <AvatarFallback>
+                {user?.username?.[0].toUpperCase() || ''}
+              </AvatarFallback>
             </Avatar>
           </div>
 
           <div className="mb-4 flex items-center gap-2">
             <h1 className="text-xl font-semibold">{user?.username}</h1>
-            {user?.is_pro && (
+            {(user?.publicMetadata?.is_pro as boolean) && (
               <span className="text-xs text-primary-blue font-bold">PRO</span>
             )}
           </div>
@@ -45,7 +50,7 @@ export default async function UserPostPage({
             <div className="flex items-center">
               <CalendarIcon className="w-4 h-4 mr-1" />
               Joined{' '}
-              {new Date(user?.created_at || '').toLocaleString('default', {
+              {new Date(user?.createdAt || '').toLocaleString('default', {
                 month: 'long',
                 year: 'numeric',
               })}

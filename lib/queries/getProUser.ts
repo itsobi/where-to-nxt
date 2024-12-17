@@ -1,30 +1,27 @@
-'server only';
-
 import { supabaseAdmin } from '@/supabase/admin';
 import { getChatRooms } from './getChatRooms';
+import { currentUser } from '@clerk/nextjs/server';
 
-export type UserType = {
+export type ProMember = {
   id: number;
   created_at: string;
   clerk_user_id: string;
   email: string;
   username: string;
   profile_image: string;
-  is_pro: boolean;
 };
 
 export const getProUsers = async (currentUserId: string) => {
   const { data: proUsers, error } = await supabaseAdmin
-    .from('users')
+    .from('pro_members')
     .select('*')
-    .not('clerk_user_id', 'eq', currentUserId)
-    .eq('is_pro', true);
+    .not('clerk_user_id', 'eq', currentUserId);
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return proUsers as UserType[];
+  return proUsers as ProMember[];
 };
 
 export const getProUsersEligibleForConversation = async (
@@ -33,7 +30,7 @@ export const getProUsersEligibleForConversation = async (
   try {
     const existingChatRooms = await getChatRooms(currentUserId);
 
-    if (existingChatRooms.length === 0) {
+    if (!existingChatRooms) {
       return [];
     }
 
@@ -49,29 +46,18 @@ export const getProUsersEligibleForConversation = async (
       return !userIdsToExclude.includes(user.clerk_user_id);
     });
 
-    return filteredProUsers as UserType[];
+    return filteredProUsers as ProMember[];
   } catch (error) {
     throw new Error(error as string);
   }
 };
 
-export const isCurrentUserPro = async (userId: string | null) => {
-  if (!userId) {
-    return false;
+export const isCurrentUserPro = async () => {
+  const user = await currentUser();
+
+  if (user?.publicMetadata?.is_pro) {
+    return true;
   }
 
-  const { data: user, error } = await supabaseAdmin
-    .from('users')
-    .select('*')
-    .eq('clerk_user_id', userId);
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  if (!user || user.length !== 1) {
-    return false;
-  }
-
-  return user[0].is_pro as boolean;
+  return false;
 };

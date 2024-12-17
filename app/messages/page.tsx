@@ -44,14 +44,13 @@ export default async function MessagesPage() {
     redirect('/');
   }
 
-  const isProMember = await isCurrentUserPro(userId);
+  const isProMember = await isCurrentUserPro();
 
   if (isProMember) {
     const chatRooms = await getChatRooms(userId);
-    const proUsers = await getProUsers(userId);
     const availableProUsers = await getProUsersEligibleForConversation(userId);
 
-    if (chatRooms.length === 0) {
+    if (!chatRooms) {
       return (
         <div className="flex flex-col justify-center items-center h-full w-full text-center">
           <h1 className="text-2xl font-semibold">Select a conversation</h1>
@@ -69,7 +68,7 @@ export default async function MessagesPage() {
                 <DialogTitle>New Message</DialogTitle>
               </DialogHeader>
               <ScrollArea className="h-[300px] pr-4">
-                {proUsers.map((user) => (
+                {availableProUsers.map((user) => (
                   <div
                     key={user.id}
                     className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent cursor-pointer"

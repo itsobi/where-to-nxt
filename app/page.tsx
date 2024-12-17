@@ -10,7 +10,7 @@ import { auth } from '@clerk/nextjs/server';
 export default async function HomePage() {
   const posts = await getPosts();
   const { userId } = await auth();
-  const isProMember = await isCurrentUserPro(userId);
+  const isProMember = await isCurrentUserPro();
 
   return (
     <>

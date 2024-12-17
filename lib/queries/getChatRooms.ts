@@ -1,6 +1,5 @@
-'server only';
-
 import { supabaseAdmin } from '@/supabase/admin';
+import { getUserById } from './getUser';
 
 export type ChatRoom = {
   id: number;
@@ -49,15 +48,16 @@ export const getChatRooms = async (userId: string) => {
     const otherUser = room.members.find(
       (memberId: string) => memberId !== userId
     );
-    const { data: userData, error: userError } = await supabaseAdmin
-      .from('users')
-      .select('*')
-      .eq('clerk_user_id', otherUser)
-      .single();
+    let userData;
 
-    if (userError) {
-      console.log(userError);
-      throw new Error(userError.message);
+    try {
+      userData = await getUserById(otherUser);
+    } catch (error) {
+      console.log(error);
+    }
+
+    if (!userData) {
+      return null;
     }
 
     enrichedChatRooms.push({

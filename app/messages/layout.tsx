@@ -14,14 +14,14 @@ export default async function MessageLayout({ children }: MessagesLayoutProps) {
   if (!userId) {
     redirect('/');
   }
-  const isProMember = await isCurrentUserPro(userId);
+  const isProMember = await isCurrentUserPro();
   const chatRooms = await getChatRooms(userId);
 
   return (
     <div className="col-span-full h-full">
       <div className="flex h-full space-x-2">
         {isProMember && (
-          <div className="hidden lg:flex flex-col border-r">
+          <div className="hidden lg:flex flex-col border-r w-1/4">
             <MessagesSidebar chatRooms={chatRooms} />
           </div>
         )}

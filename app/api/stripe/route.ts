@@ -3,8 +3,7 @@ import {
   PaymentSucceededEmailTemplate,
 } from '@/components/EmailTemplate';
 import { formatCurrency } from '@/lib/utils';
-import { supabaseAdmin } from '@/supabase/admin';
-import { currentUser } from '@clerk/nextjs/server';
+import { clerkClient } from '@clerk/nextjs/server';
 import { headers } from 'next/headers';
 import { Resend } from 'resend';
 import Stripe from 'stripe';
@@ -16,19 +15,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET!;
 
 export async function POST(request: Request) {
-  const user = await currentUser();
   const headersList = await headers();
   const sig = headersList.get('stripe-signature');
-
-  const userEmail = user?.emailAddresses[0].emailAddress;
-
-  if (!userEmail)
-    return Response.json({ error: 'No user email' }, { status: 400 });
-
-  const username = user?.username;
-
-  if (!username)
-    return Response.json({ error: 'No username' }, { status: 400 });
 
   if (!sig) return Response.json({ error: 'No signature' }, { status: 400 });
 
@@ -44,13 +32,13 @@ export async function POST(request: Request) {
   }
 
   switch (event.type) {
-    case 'payment_intent.canceled':
-      const paymentIntentCanceled = event.data.object;
-      console.log('Payment intent canceled', paymentIntentCanceled);
-      break;
-    case 'payment_intent.payment_failed':
-      const paymentIntentFailed = event.data.object;
-      console.log('Payment intent failed', paymentIntentFailed);
+    case 'checkout.session.expired':
+      const checkoutSessionExpired = event.data.object;
+      const { userEmail, username } = checkoutSessionExpired.metadata as {
+        userEmail: string;
+        username: string;
+      };
+      console.log('Checkout session expired', checkoutSessionExpired);
 
       const { error } = await resend.emails.send({
         from: 'Where to NXT? <payments@wheretonxt.com>',
@@ -58,7 +46,7 @@ export async function POST(request: Request) {
         subject: 'Payment Failed',
         react: PaymentFailedEmailTemplate({
           username: username,
-          amount: formatCurrency(paymentIntentFailed.amount),
+          amount: formatCurrency(checkoutSessionExpired.amount_total as number),
         }),
       });
 
@@ -67,50 +55,44 @@ export async function POST(request: Request) {
         return Response.json({ error }, { status: 500 });
       }
       break;
-    case 'payment_intent.succeeded':
-      const paymentIntent = event.data.object;
-      console.log('Payment intent succeeded', paymentIntent);
+    case 'checkout.session.completed':
+      const checkoutSessionCompleted = event.data.object;
+      const {
+        userId,
+        userEmail: email,
+        username: userName,
+      } = checkoutSessionCompleted.metadata as {
+        userId: string;
+        userEmail: string;
+        username: string;
+      };
+      console.log('Checkout session completed', checkoutSessionCompleted);
 
-      // Update users table with is_pro and paymentIntent.id
-      const { error: updateUserError } = await supabaseAdmin
-        .from('users')
-        .update({
-          is_pro: true,
-          payment_intent_id: paymentIntent.id,
-        })
-        .eq('id', user?.id);
-
-      if (updateUserError) {
-        console.error('Error updating user:', updateUserError);
-        return Response.json({ updateUserError }, { status: 500 });
+      try {
+        const clerk = await clerkClient();
+        await clerk.users.updateUserMetadata(userId, {
+          publicMetadata: {
+            is_pro: true,
+          },
+        });
+      } catch (error) {
+        console.error('Error updating user:', error);
+        return Response.json({ error }, { status: 500 });
       }
 
       const { error: paymentSucceededEmailError } = await resend.emails.send({
         from: 'Where to NXT? <payments@wheretonxt.com>',
-        to: [userEmail],
+        to: [email],
         subject: 'Payment Success',
         react: PaymentSucceededEmailTemplate({
-          username: username,
-          amount: formatCurrency(paymentIntent.amount),
+          username: userName,
+          amount: formatCurrency(
+            checkoutSessionCompleted.amount_total as number
+          ),
         }),
       });
 
       if (paymentSucceededEmailError) {
-        console.error(
-          'Error sending payment succeeded email:',
-          paymentSucceededEmailError
-        );
-        return Response.json({ paymentSucceededEmailError }, { status: 500 });
-      }
-
-      const { error: personEmailError } = await resend.emails.send({
-        from: 'Where to NXT? <payments@wheretonxt.com>',
-        to: ['obi.j.obialo@gamil.com'],
-        subject: 'Update all of the new users posts',
-        html: `<p>New PRO member! Update user: ${user?.id} posts to PRO</p>`,
-      });
-
-      if (personEmailError) {
         console.error(
           'Error sending payment succeeded email:',
           paymentSucceededEmailError

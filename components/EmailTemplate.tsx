@@ -10,7 +10,7 @@ export function WelcomeEmailTemplate({
   return (
     <div>
       <h2>Hello {username}! We&apos;re glad to have you onboard.</h2>
-      <h3>
+      <p>
         If you ever need help, please reach out to us{' '}
         <a
           href={`${PROJECT_URL}/help`}
@@ -20,7 +20,7 @@ export function WelcomeEmailTemplate({
           here
         </a>
         .
-      </h3>
+      </p>
       <footer>
         <p>
           This is an automated message. Please do not reply to this email. If
@@ -53,7 +53,7 @@ export function PaymentFailedEmailTemplate({
       <h2>
         Hello {username}. Unfortunately your payment of ${amount} failed.
       </h2>
-      <h3>
+      <p>
         Please try again, and If you need help, please reach out to us{' '}
         <a
           href={`${PROJECT_URL}/help`}
@@ -63,7 +63,7 @@ export function PaymentFailedEmailTemplate({
           here
         </a>
         .
-      </h3>
+      </p>
       <footer>
         <p>
           This is an automated message. Please do not reply to this email. If
@@ -94,9 +94,9 @@ export function PaymentSucceededEmailTemplate({
   return (
     <div>
       <h2>
-        Hello {username}. Your payment of ${amount} succeeded!
+        Hello {username}. Your payment of {amount} succeeded!
       </h2>
-      <h3>
+      <p>
         Take a look at the{' '}
         <a
           href={`${PROJECT_URL}/messages`}
@@ -105,8 +105,9 @@ export function PaymentSucceededEmailTemplate({
         >
           messages
         </a>
+        {` `}
         tab and start chatting with people all over the world!
-      </h3>
+      </p>
 
       <footer>
         <p>

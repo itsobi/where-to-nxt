@@ -1,23 +1,17 @@
-'server only';
-
-import { supabaseAdmin } from '@/supabase/admin';
-import { UserType } from './getProUser';
+import { clerkClient, User } from '@clerk/nextjs/server';
 
 export const getUserById = async (userId: string | undefined) => {
   if (!userId) {
     return null;
   }
 
-  const { data, error } = await supabaseAdmin
-    .from('users')
-    .select('*')
-    .eq('clerk_user_id', userId)
-    .single();
+  const client = await clerkClient();
 
-  if (error) {
-    console.error(error);
+  const user = await client.users.getUser(userId);
+
+  if (!user) {
     return null;
   }
 
-  return data as UserType;
+  return user as User;
 };

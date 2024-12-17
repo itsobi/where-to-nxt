@@ -26,7 +26,7 @@ export const createComment = async ({
     throw new Error('Unauthorized');
   }
 
-  const proUser = await isCurrentUserPro(user.id);
+  const proUser = await isCurrentUserPro();
 
   if (!postId) {
     throw new Error('Post ID is required');

@@ -30,7 +30,7 @@ export async function likePost({
     throw new Error('User or post ID is missing');
   }
 
-  const proUser = await isCurrentUserPro(user.id);
+  const proUser = await isCurrentUserPro();
 
   console.log(`STARTING LIKE POST for user ${userId} and post ${postId}`);
 
