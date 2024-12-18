@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { MessageSquare, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,29 +29,29 @@ export function UserAvatarPopover({
 }: UserAvatarPopoverProps) {
   const { user } = useUser();
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  // const [isPending, startTransition] = useTransition();
   if (!user) return null;
 
   const chatRoomId = createChatRoomId(user.id, author_clerk_user_id);
 
-  const handleCreateChatRoom = async () => {
-    startTransition(async () => {
-      const response = await createChatRoom(
-        user.id,
-        author_clerk_user_id,
-        chatRoomId
-      );
-      if (response.chat_room_id) {
-        router.push(`/messages/${chatRoomId}`);
-      } else if (response.success) {
-        toast.success(response.message);
-        router.push(`/messages/${chatRoomId}`);
-      } else {
-        console.log(response.message);
-        toast.error(response.message);
-      }
-    });
-  };
+  // const handleCreateChatRoom = async () => {
+  //   startTransition(async () => {
+  //     const response = await createChatRoom(
+  //       user.id,
+  //       author_clerk_user_id,
+  //       chatRoomId
+  //     );
+  //     if (response.chat_room_id) {
+  //       router.push(`/messages/${chatRoomId}`);
+  //     } else if (response.success) {
+  //       toast.success(response.message);
+  //       router.push(`/messages/${chatRoomId}`);
+  //     } else {
+  //       console.log(response.message);
+  //       toast.error(response.message);
+  //     }
+  //   });
+  // };
 
   return (
     <Popover>
