@@ -10,11 +10,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useUser } from '@clerk/nextjs';
-import { createChatRoomId } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { useTransition } from 'react';
-import { createChatRoom } from '@/lib/actions/createChatRoom';
 
 interface UserAvatarPopoverProps {
   author_clerk_user_id: string;
@@ -32,7 +28,7 @@ export function UserAvatarPopover({
   // const [isPending, startTransition] = useTransition();
   if (!user) return null;
 
-  const chatRoomId = createChatRoomId(user.id, author_clerk_user_id);
+  // const chatRoomId = createChatRoomId(user.id, author_clerk_user_id);
 
   // const handleCreateChatRoom = async () => {
   //   startTransition(async () => {
