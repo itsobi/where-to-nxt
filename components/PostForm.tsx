@@ -39,8 +39,8 @@ export function PostForm() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      if (files.length > 5) {
-        toast.error('You can only upload a maximum of 5 images.');
+      if (files.length > 3) {
+        toast.error('You can only upload a maximum of 3 images.');
         event.target.value = ''; // Clear the file input
         return;
       }
@@ -87,18 +87,27 @@ export function PostForm() {
       <CardContent className="space-y-4">
         <form
           action={async (formData: FormData) => {
-            startTransition(async () => {
-              selectedImages.forEach((file, index) => {
-                formData.append(`image-${index}`, file);
+            try {
+              startTransition(async () => {
+                selectedImages.forEach((file, index) => {
+                  formData.append(`image-${index}`, file);
+                });
+
+                const result = await createPost(formData);
+
+                if (result?.success) {
+                  clearForm();
+                  toast.success(result.message);
+                } else {
+                  toast.error(result.message || 'Failed to create post');
+                }
               });
-              clearForm();
-              const result = await createPost(formData);
-              if (result?.success) {
-                toast.success(result.message);
-              } else {
-                toast.error(result.message);
-              }
-            });
+            } catch (error) {
+              console.error(error);
+              toast.error(
+                'There was an error creating your post. Try again, or visit the help page.'
+              );
+            }
           }}
           className="space-y-4"
         >
@@ -243,8 +252,8 @@ export function PostForm() {
             </div>
           ))}
         </div>
-        <p className="text-sm text-muted-foreground">
-          *Post and country are required to create a post
+        <p className="text-xs text-muted-foreground">
+          *Post content and country are required to create a post.
         </p>
       </CardContent>
     </Card>
