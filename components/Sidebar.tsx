@@ -27,7 +27,7 @@ const sidebarItems = [
   {
     label: 'Home',
     icon: <HomeIcon />,
-    href: '/',
+    href: '/home',
   },
   {
     label: 'Messages',
@@ -51,7 +51,7 @@ export function Sidebar() {
       <aside className="h-screen px-4 bg-moon w-16 xl:w-56 pt-2 flex flex-col items-center relative">
         <div className="flex items-center gap-x-2 py-2 text-primary-blue">
           <Image src="/logo.svg" alt="Where to NXT?" width={40} height={100} />
-          <h4 className="hidden xl:flex text-lg font-semibold">
+          <h4 className="hidden xl:flex text-lg font-semibold italic">
             Where to NXT?
           </h4>
         </div>
@@ -92,7 +92,7 @@ export function Sidebar() {
       >
         <div className="flex items-center gap-x-2 py-2 text-primary-blue">
           <Image src="/logo.svg" alt="Where to NXT?" width={40} height={100} />
-          <h4 className="hidden xl:flex text-lg font-semibold">
+          <h4 className="hidden xl:flex text-lg font-semibold italic">
             Where to NXT?
           </h4>
         </div>
@@ -151,7 +151,10 @@ export function Sidebar() {
               justobii.com
             </a>
           </p>
-          <p className="text-xs text-muted-foreground">© 2025 wheretonxt.com</p>
+          <p className="text-xs text-muted-foreground">
+            © <span className="italic">Where to NXT?</span>{' '}
+            {new Date().getFullYear()}
+          </p>
         </footer>
       </aside>
     );

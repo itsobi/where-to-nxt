@@ -1,63 +1,69 @@
 import { supabaseAdmin } from '@/supabase/admin';
-import { getChatRooms } from './getChatRooms';
-import { currentUser } from '@clerk/nextjs/server';
+import { getChatRoomsUserIsApartOf } from './getChatRooms';
 
 export type ProMember = {
-  id: number;
+  id: string;
   created_at: string;
   clerk_user_id: string;
-  email: string;
   username: string;
   profile_image: string;
+  is_pro: boolean;
 };
 
-export const getProUsers = async (currentUserId: string) => {
-  const { data: proUsers, error } = await supabaseAdmin
-    .from('pro_members')
+export const getProMembers = async (currentUserId: string) => {
+  const { data: proMembers, error } = await supabaseAdmin
+    .from('users')
     .select('*')
+    .eq('is_pro', true)
     .not('clerk_user_id', 'eq', currentUserId);
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return proUsers as ProMember[];
+  return proMembers;
 };
 
 export const getProUsersEligibleForConversation = async (
   currentUserId: string
 ) => {
   try {
-    const existingChatRooms = await getChatRooms(currentUserId);
+    const existingChatRoomsUserIsApartOf = await getChatRoomsUserIsApartOf(
+      currentUserId
+    );
 
-    if (!existingChatRooms) {
+    if (
+      !existingChatRoomsUserIsApartOf ||
+      existingChatRoomsUserIsApartOf.length === 0
+    ) {
       return [];
     }
 
-    const existingChatRoomUserIds = existingChatRooms.map(
-      (chatRoom) => chatRoom.otherUser.clerk_user_id
+    const existingChatRoomUserIds = existingChatRoomsUserIsApartOf.map(
+      (chatRoom) => chatRoom.otherUser?.id
     );
 
     const userIdsToExclude = [currentUserId, ...existingChatRoomUserIds];
 
-    const proUsers = await getProUsers(currentUserId);
-
-    const filteredProUsers = proUsers.filter((user) => {
-      return !userIdsToExclude.includes(user.clerk_user_id);
-    });
-
-    return filteredProUsers as ProMember[];
+    const proUsers = await getProMembers(currentUserId);
+    return proUsers.filter(
+      (user) => !userIdsToExclude.includes(user.clerk_user_id)
+    ) as ProMember[];
   } catch (error) {
+    console.error('Error in getProUsersEligibleForConversation:', error);
     throw new Error(error as string);
   }
 };
 
-export const isCurrentUserPro = async () => {
-  const user = await currentUser();
+export const isCurrentUserPro = async (userId: string) => {
+  const { data, error } = await supabaseAdmin
+    .from('users')
+    .select('is_pro')
+    .eq('clerk_user_id', userId);
 
-  if (user?.publicMetadata?.is_pro) {
-    return true;
+  if (error) {
+    throw new Error(error.message);
   }
 
-  return false;
+  return data[0]?.is_pro;
 };

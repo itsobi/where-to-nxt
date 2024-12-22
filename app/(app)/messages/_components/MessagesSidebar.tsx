@@ -1,12 +1,17 @@
 import { ChatRoom } from '@/lib/queries/getChatRooms';
 import { Conversation } from './Conversation';
+import { MessagesHeader } from './MessagesHeader';
+import { ProMember } from '@/lib/queries/getProUser';
 
 interface MessageSidebarProps {
   chatRooms: ChatRoom[] | null;
+  availableProUsers: ProMember[];
 }
 
-export function MessagesSidebar({ chatRooms }: MessageSidebarProps) {
-  console.log('chatRooms', chatRooms);
+export function MessagesSidebar({
+  chatRooms,
+  availableProUsers,
+}: MessageSidebarProps) {
   if (chatRooms && chatRooms.length === 0) {
     return (
       <div className="flex items-start justify-center h-full">
@@ -16,6 +21,7 @@ export function MessagesSidebar({ chatRooms }: MessageSidebarProps) {
   }
   return (
     <div className="lg:pr-4">
+      <MessagesHeader availableProUsers={availableProUsers} />
       {chatRooms?.map((chatRoom) => (
         <Conversation key={chatRoom.id} chatRoom={chatRoom} />
       ))}

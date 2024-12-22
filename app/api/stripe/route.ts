@@ -3,6 +3,7 @@ import {
   PaymentSucceededEmailTemplate,
 } from '@/components/EmailTemplate';
 import { formatCurrency } from '@/lib/utils';
+import { supabaseAdmin } from '@/supabase/admin';
 import { clerkClient } from '@clerk/nextjs/server';
 import { headers } from 'next/headers';
 import { Resend } from 'resend';
@@ -74,6 +75,19 @@ export async function POST(request: Request) {
           publicMetadata: {
             is_pro: true,
           },
+        });
+
+        // update pro-users table
+        await supabaseAdmin.from('pro_members').insert({
+          clerk_user_id: userId,
+        });
+
+        // email myself that the user is now a pro member
+        await resend.emails.send({
+          from: 'Where to NXT? <notify@wheretonxt.com>',
+          to: ['obi.j.obialo@gmail.com'],
+          subject: 'New Pro Member',
+          html: `<p>New Pro Member: ${userName} || email:(${email}) || userId: ${userId}</p>`,
         });
       } catch (error) {
         console.error('Error updating user:', error);

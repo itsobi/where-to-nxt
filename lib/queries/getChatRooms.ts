@@ -1,5 +1,5 @@
 import { supabaseAdmin } from '@/supabase/admin';
-import { getUserById } from './getUser';
+import { getUserById, SupabaseUser } from './getUser';
 
 export type ChatRoom = {
   id: number;
@@ -10,17 +10,10 @@ export type ChatRoom = {
     message: string;
     created_at: string;
   };
-  otherUser: {
-    id: number;
-    created_at: string;
-    clerk_user_id: string;
-    username: string;
-    profile_image: string;
-    is_pro: boolean;
-  };
+  otherUser: SupabaseUser;
 };
 
-export const getChatRooms = async (userId: string) => {
+export const getChatRoomsUserIsApartOf = async (userId: string) => {
   const { data: chatRooms, error } = await supabaseAdmin
     .from('chat_rooms')
     .select(
@@ -45,13 +38,13 @@ export const getChatRooms = async (userId: string) => {
   for (const room of chatRooms) {
     const lastMessage = room.messages?.[0] || null;
 
-    const otherUser = room.members.find(
+    const otherUserId = room.members.find(
       (memberId: string) => memberId !== userId
     );
     let userData;
 
     try {
-      userData = await getUserById(otherUser);
+      userData = await getUserById(otherUserId);
     } catch (error) {
       console.log(error);
     }

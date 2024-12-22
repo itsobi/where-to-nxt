@@ -8,6 +8,8 @@ import { ChatRoom } from '../_components/ChatRoom';
 import { getChatRoomMessages } from '@/lib/queries/getChatRoomMessages';
 import { CustomAlertDialog } from '@/components/CustomAlertDialog';
 import { getUserById } from '@/lib/queries/getUser';
+import { BackButton } from '@/components/BackButton';
+import { supabaseAdmin } from '@/supabase/admin';
 
 const features = [
   {
@@ -24,23 +26,30 @@ const features = [
   },
 ];
 
-const isPro = true;
-
 export default async function ChatRoomPage({
   params,
 }: {
   params: Promise<{ chatId: string }>;
 }) {
-  const chatId = (await params).chatId;
+  const chatRoomId = (await params).chatId;
   const { userId } = await auth();
 
-  const otherUserId = chatId.split('-').find((id) => id !== userId);
+  if (!userId) {
+    redirect('/');
+  }
+
+  const isPro = await supabaseAdmin
+    .from('users')
+    .select('is_pro')
+    .eq('id', userId)
+    .single();
+
+  const otherUserId = chatRoomId.split('-').find((id) => id !== userId);
 
   const otherUser = await getUserById(otherUserId);
 
   if (isPro) {
     if (!userId) {
-      redirect('/');
     }
 
     if (!otherUserId) {
@@ -53,7 +62,7 @@ export default async function ChatRoomPage({
       );
     }
 
-    const messages = await getChatRoomMessages(chatId);
+    const messages = await getChatRoomMessages(chatRoomId);
     // transform the messages to have the created_at as a string for the client
     const transformedMessages = messages.map((msg) => ({
       ...msg,
@@ -62,8 +71,11 @@ export default async function ChatRoomPage({
 
     return (
       <>
+        <div className="lg:hidden">
+          <BackButton />
+        </div>
         <ChatRoom
-          chatRoomId={chatId}
+          chatRoomId={chatRoomId}
           preRenderedMessages={transformedMessages}
           recipientUsername={otherUser?.username || ''}
         />

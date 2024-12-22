@@ -1,7 +1,6 @@
 import { Container } from '@/components/Container';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { getChatRooms } from '@/lib/queries/getChatRooms';
+import { getChatRoomsUserIsApartOf } from '@/lib/queries/getChatRooms';
 import { auth } from '@clerk/nextjs/server';
 import { Check } from 'lucide-react';
 import { redirect } from 'next/navigation';
@@ -9,14 +8,6 @@ import {
   getProUsersEligibleForConversation,
   isCurrentUserPro,
 } from '@/lib/queries/getProUser';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Conversation } from './_components/Conversation';
 import { MessagesHeader } from './_components/MessagesHeader';
 import { NewChatRoomDialog } from './_components/NewChatRoomDialog';
@@ -43,52 +34,27 @@ export default async function MessagesPage() {
     redirect('/');
   }
 
-  const isProMember = await isCurrentUserPro();
+  const isProMember = await isCurrentUserPro(userId);
 
   if (isProMember) {
-    const chatRooms = await getChatRooms(userId);
+    const chatRooms = await getChatRoomsUserIsApartOf(userId);
     const availableProUsers = await getProUsersEligibleForConversation(userId);
 
-    if (!chatRooms) {
+    if (!chatRooms?.length) {
       return (
         <div className="flex flex-col justify-center items-center h-full w-full text-center">
-          <h1 className="text-2xl font-semibold">Select a conversation</h1>
+          <h1 className="text-2xl font-semibold">No conversations yet</h1>
           <p className="text-muted-foreground">
-            Continue a conversation or start a new one with a Pro user!
+            Start a new one with a Pro user!
           </p>
-          <Dialog>
-            <DialogTrigger asChild>
+          <NewChatRoomDialog
+            TriggerComponent={
               <Button className="mt-4 font-semibold">
                 Start a conversation
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[450px]">
-              <DialogHeader>
-                <DialogTitle>New Message</DialogTitle>
-              </DialogHeader>
-              <ScrollArea className="h-[300px] pr-4">
-                {availableProUsers.map((user) => (
-                  <div
-                    key={user.id}
-                    className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent cursor-pointer"
-                  >
-                    <Avatar>
-                      <AvatarImage
-                        src={user.profile_image}
-                        alt={user.username}
-                      />
-                      <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium leading-none">
-                        {user.username}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </ScrollArea>
-            </DialogContent>
-          </Dialog>
+            }
+            availableProUsers={availableProUsers}
+          />
         </div>
       );
     }

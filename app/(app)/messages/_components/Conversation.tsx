@@ -13,9 +13,9 @@ export function Conversation({ chatRoom }: ConversationProps) {
       className="flex space-x-2 p-4 hover:bg-gray-100 rounded-md cursor-pointer truncate h-fit"
     >
       <Avatar>
-        <AvatarImage src={chatRoom.otherUser.profile_image} />
+        <AvatarImage src={chatRoom.otherUser.profile_image || ''} />
         <AvatarFallback>
-          {chatRoom.otherUser.username[0].toUpperCase()}
+          {chatRoom.otherUser?.username?.[0].toUpperCase()}
         </AvatarFallback>
       </Avatar>
       <div className="flex flex-col">

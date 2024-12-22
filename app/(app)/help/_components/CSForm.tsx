@@ -16,7 +16,6 @@ import {
   FormLabel,
   FormItem,
   FormMessage,
-  FormDescription,
 } from '@/components/ui/form';
 import { useTransition } from 'react';
 import { sendCSTicket } from '@/lib/actions/sendCSTicket';
@@ -76,7 +75,10 @@ export function CSForm({ username, email }: CSFormProps) {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-primary-blue">Username</FormLabel>
+                  <FormLabel className="text-primary-blue">
+                    Username{' '}
+                    <span className="text-xs text-gray-500">(prefilled)</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -85,9 +87,6 @@ export function CSForm({ username, email }: CSFormProps) {
                       disabled
                     />
                   </FormControl>
-                  <FormDescription className="text-xs">
-                    (Prefilled)
-                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -96,7 +95,10 @@ export function CSForm({ username, email }: CSFormProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-primary-blue">Email</FormLabel>
+                  <FormLabel className="text-primary-blue">
+                    Email{' '}
+                    <span className="text-xs text-gray-500">(prefilled)</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -105,9 +107,6 @@ export function CSForm({ username, email }: CSFormProps) {
                       disabled
                     />
                   </FormControl>
-                  <FormDescription className="text-xs">
-                    (Prefilled)
-                  </FormDescription>
                 </FormItem>
               )}
             />
