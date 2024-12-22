@@ -12,7 +12,6 @@ import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// TODO: update endpoint secret on production
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET!;
 
 export async function POST(request: Request) {
