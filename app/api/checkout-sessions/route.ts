@@ -4,6 +4,11 @@ import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
+const priceId =
+  process.env.NODE_ENV === 'development'
+    ? process.env.DEVELOPMENT_PRICE_ID!
+    : process.env.PRODUCTION_PRICE_ID!;
+
 export async function POST() {
   const user = await currentUser();
 
@@ -17,7 +22,7 @@ export async function POST() {
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
-          price: 'price_1QTeBKE8ey3Irs86hClPodSb',
+          price: priceId,
           quantity: 1,
         },
       ],
