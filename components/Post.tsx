@@ -125,6 +125,9 @@ export function Post({ post, linkToPost = false }: PostProps) {
         <div className="w-full">
           <div className="flex items-center gap-2">
             <p className="font-semibold">{post.username}</p>
+            {post.author_is_pro && (
+              <span className="text-xs text-primary-blue font-bold ">PRO</span>
+            )}
             <p className="hidden lg:block text-sm text-muted-foreground">
               {formatDistanceToNow(new Date(post.created_at), {
                 addSuffix: true,

@@ -31,6 +31,7 @@ export type PostType = {
     clerk_user_id: string;
   }[];
   images?: string[];
+  author_is_pro: boolean;
 };
 
 export const getPosts = async (): Promise<PostType[]> => {
